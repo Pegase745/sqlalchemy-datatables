@@ -21,7 +21,7 @@ setup(
     install_requires=['sqlalchemy'],
     py_modules=['datatables'],
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Pyramid',
         'Intended Audience :: Developers',
