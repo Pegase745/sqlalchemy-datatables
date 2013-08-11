@@ -1,4 +1,4 @@
-sqlalchemy-datatables
+sqlalchemy-datatables [![Build Status](https://travis-ci.org/Pegase745/sqlalchemy-datatables.png?branch=master)](https://travis-ci.org/Pegase745/sqlalchemy-datatables)
 =====================
 
 ## Usage
