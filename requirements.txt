@@ -1,1 +1,2 @@
 SQLAlchemy==0.8.2
+pyramid==1.4.3
