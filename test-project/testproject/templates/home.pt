@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SQLAlchemy & jQuery DataTables example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SQLAlchemy & jQuery DataTables example">
+    <meta name="author" content="Michel Nemnom">
+
+    <!-- Le styles -->
+    <link href="https://raw.github.com/twbs/bootstrap/v2.3.2/docs/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="https://raw.github.com/twbs/bootstrap/v2.3.2/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_disabled.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_enabled.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_enabled_hover.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_disabled.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_enabled.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_enabled_hover.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_asc.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_asc_disabled.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_both.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_desc.png" rel="stylesheet">
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_desc_disabled.png" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Simple Example -->
+      <div class="row">
+        <div class="span12">
+          <h1>Welcome to <strong>${project}</strong></h1>
+          <h2>Simple example</h2>
+          <table class="table" id="simple-example">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>User name</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Relation Example -->
+      <div class="row">
+        <div class="span12">
+          <!-- <h2>Relation example</h2>
+          <table class="table" id="relation-example">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>User name</th>
+                <th>Address Id</th>
+                <th>Address description</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table> -->
+        </div>
+      </div>
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function(){
+        $('#simple-example').dataTable({
+          "bProcessing": true,
+          "bServerSide": true,
+          "sAjaxSource": "${request.route_path('simple_example')}"
+        });
+
+        $('#relation-example').dataTable({
+          "bProcessing": true,
+          "bServerSide": true,
+          "sAjaxSource": "${request.route_path('relation_example')}"
+        });
+      });
+    </script>
+  </body>
+</html>
