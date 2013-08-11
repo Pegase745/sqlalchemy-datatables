@@ -5,7 +5,8 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
-    MyModel,
+    User,
+    Address,
     )
 
 from datatables import ColumnDT, DataTables 
@@ -39,7 +40,7 @@ def _upper(chain):
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     try:
-        DBSession.query(MyModel).first()
+        DBSession.query(User).first()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'project': 'test-project'}
@@ -54,10 +55,15 @@ def simple_example(request):
     columns.append(ColumnDT('created_at', None , str))
 
     # defining the initial query depending on your purpose
-    query = DBSession.query(MyModel)
+    query = DBSession.query(User)
 
     # instantiating a DataTable for the query and table needed
-    rowTable = DataTables(request, MyModel, query, columns) 
+    rowTable = DataTables(request, User, query, columns) 
 
     # returns what is needed by DataTable 
     return rowTable.output_result()
+
+
+@view_config(route_name='relation_example', request_method='GET', renderer='json')
+def relation_example(request):
+    pass

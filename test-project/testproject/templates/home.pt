@@ -28,7 +28,7 @@
 
   <body>
     <div class="container">
-      <!-- Example row of columns -->
+      <!-- Simple Example -->
       <div class="row">
         <div class="span12">
           <h1>Welcome to <strong>${project}</strong></h1>
@@ -37,12 +37,30 @@
             <thead>
               <tr>
                 <th>Id</th>
-                <th>Name</th>
+                <th>User name</th>
                 <th>Created at</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
+        </div>
+      </div>
+      <!-- Relation Example -->
+      <div class="row">
+        <div class="span12">
+          <!-- <h2>Relation example</h2>
+          <table class="table" id="relation-example">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>User name</th>
+                <th>Address Id</th>
+                <th>Address description</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table> -->
         </div>
       </div>
     </div> <!-- /container -->
@@ -58,6 +76,12 @@
           "bProcessing": true,
           "bServerSide": true,
           "sAjaxSource": "${request.route_path('simple_example')}"
+        });
+
+        $('#relation-example').dataTable({
+          "bProcessing": true,
+          "bServerSide": true,
+          "sAjaxSource": "${request.route_path('relation_example')}"
         });
       });
     </script>

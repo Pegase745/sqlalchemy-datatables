@@ -12,7 +12,8 @@ from pyramid.paster import (
 
 from ..models import (
     DBSession,
-    MyModel,
+    User,
+    Address,
     Base,
     )
 
@@ -36,7 +37,10 @@ def main(argv=sys.argv):
     with transaction.manager:
         i = 0
         while i < 30:
-            model = MyModel(name='Row' + str(i))
-            DBSession.add(model)
+            address = Address(description='Address#' + str(i))
+            DBSession.add(address)
+            user = User(name='User#' + str(i))
+            user.address = address
+            DBSession.add(user)
             sleep(1)
             i+=1
