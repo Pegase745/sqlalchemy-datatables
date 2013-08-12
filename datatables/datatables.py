@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_
 
 from collections import namedtuple
 
 ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'filter'])
+
+
+def get_attr(sqla_object, attribute):
+    """Returns the value of an attribute of an SQLAlchemy entity 
+    """
+    output = sqla_object
+    for x in attribute.split('.'):
+        output = getattr(output, x)
+    return output
+
 
 class ColumnDT(ColumnTuple):
     """Class defining a DataTables Column with a ColumnTuple:
@@ -72,7 +80,6 @@ class DataTables:
  
         return output
 
-
     def run(self):
         """Launch filtering, sorting and paging processes to output results
         """
@@ -97,10 +104,10 @@ class DataTables:
             row = dict()
             for j in range(len(self.columns)):
                 col = self.columns[j]
+                tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    row[col.mData if col.mData else str(j)] = col.filter(getattr(self.results[i], col.column_name))
-                else:
-                    row[col.mData if col.mData else str(j)] = getattr(self.results[i], col.column_name)
+                    tmp_row = col.filter(tmp_row)
+                row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
 
         self.results = formatted_results
@@ -112,12 +119,11 @@ class DataTables:
         search_value = self.request_values.get('sSearch')
         conditions = []
 
-        if(search_value) and (search_value != ""):
+        if search_value:
             for col in self.columns:
                 conditions.append(getattr(self.sqla_object, col.column_name).like("%" + search_value + "%"))
 
             condition = or_(*conditions)
-            print condition
             self.query = self.query.filter(condition)
             
             # count after filtering
@@ -133,16 +139,17 @@ class DataTables:
 
         Order = namedtuple('order', ['name', 'dir'])
 
-        if ( self.request_values.get('iSortCol_0') != "" ) \
-            and ( self.request_values.get('iSortingCols') > 0 ):
+        if self.request_values.get('iSortCol_0') \
+            and self.request_values.get('iSortingCols') > 0:
 
             for i in range(int(self.request_values['iSortingCols'])):
                 sorting.append(Order( self.columns[int(self.request_values['iSortCol_'+str(i)])].column_name,
                         self.request_values['sSortDir_'+str(i)]))
 
         for sort in sorting:
+            sort_name = self.sqla_object.__tablename__ + '.' + sort.name
             self.query = self.query.order_by(
-                asc(sort.name) if sort.dir == 'asc' else desc(sort.name))
+                asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
 
 
     def paging(self):

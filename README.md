@@ -15,9 +15,19 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    address = relationship("Address", uselist=False, backref="user")
 
     def __init__(self, name):
         self.name = name
+
+class Address(Base):
+    __tablename__ = 'addresses'
+    id = Column(Integer, primary_key=True)
+    description = Column(Text, unique=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    def __init__(self, description):
+        self.description = description
 ```
 
 **views.py**
@@ -42,10 +52,11 @@ def simple_example(request):
   columns = []
   columns.append(ColumnDT('id'))
   columns.append(ColumnDT('name', None, _upper))
+  columns.append(ColumnDT('address.description'))
   columns.append(ColumnDT('created_at', None , str))
 
   # defining the initial query depending on your purpose
-  query = DBSession.query(User)
+  query = DBSession.query(User).join(Address).filter(Address.id > 14)
 
   # instantiating a DataTable for the query and table needed
   rowTable = DataTables(request, User, query, columns) 
@@ -62,6 +73,7 @@ def simple_example(request):
     <tr>
       <th>Id</th>
       <th>User name</th>
+      <th>Address description</th>
       <th>Created at</th>
     </tr>
   </thead>

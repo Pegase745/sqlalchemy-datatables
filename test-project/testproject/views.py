@@ -52,10 +52,11 @@ def simple_example(request):
     columns = []
     columns.append(ColumnDT('id'))
     columns.append(ColumnDT('name', None, _upper))
+    columns.append(ColumnDT('address.description'))
     columns.append(ColumnDT('created_at', None , str))
 
     # defining the initial query depending on your purpose
-    query = DBSession.query(User)
+    query = DBSession.query(User).join(Address).filter(Address.id > 14)
 
     # instantiating a DataTable for the query and table needed
     rowTable = DataTables(request, User, query, columns) 

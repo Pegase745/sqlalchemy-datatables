@@ -38,6 +38,7 @@
               <tr>
                 <th>Id</th>
                 <th>User name</th>
+                <th>Address description</th>
                 <th>Created at</th>
               </tr>
             </thead>
