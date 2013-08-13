@@ -2,7 +2,7 @@ sqlalchemy-datatables [![Build Status](https://travis-ci.org/Pegase745/sqlalchem
 =====================
 
 ## Usage
-The package is available on [PyPI] (https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.0)
+The package is available on [PyPI] (https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.2)
 
 > pip install sqlalchemy-datatables
 
@@ -106,6 +106,19 @@ $ $venv/bin/pserve development.ini
 
 Open a web browser and got to the url localhost:6543
 ```
+
+## Changelog
+
+#### v0.1.2 (13/08/2013)####
+- Fixing errors due to relationships (filtering, sorting)
+- Setting filter default value to str, avoiding JSON serializable type errors
+
+#### v0.1.1 (12/08/2013)####
+- Fixing viewing column relationships
+
+#### v0.1.0 (12/08/2013)####
+- First version
+
 
 ## License
 
