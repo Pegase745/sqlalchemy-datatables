@@ -96,13 +96,15 @@ def simple_example(request):
 $ git clone 
 $ virtualenv --no-site-packages sqlalchemy-datatables
 $ cd sqlalchemy-datatables/
+Once only: 
+$ bin/python setup.py develop
+
 $ cd test-project/
 $ $venv/bin/python setup.py develop
-
-Once only: 
-$ $venv/bin/python sqlalchemy-datatables/setup.py develop
-
+$ $venv/bin/initialize_test-project_db development.ini
 $ $venv/bin/pserve development.ini
+
+Open a web browser and got to the url localhost:6543
 ```
 
 ## License
