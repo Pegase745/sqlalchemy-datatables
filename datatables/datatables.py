@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_
+from sqlalchemy.orm.properties import RelationshipProperty
 
 from collections import namedtuple
 
@@ -29,8 +30,10 @@ class ColumnDT(ColumnTuple):
 
     :returns: a ColumnDT object 
     """
-    def __new__(cls, column_name, mData=None, filter=None):
-        """On creation, sets default None values for mData and filter
+    def __new__(cls, column_name, mData=None, filter=str):
+        """
+        On creation, sets default None values for mData and string value for
+        filter (cause: Object representation is not JSON serializable)
         """
         return super(ColumnDT, cls).__new__(cls, column_name, mData, filter)
 
@@ -121,7 +124,20 @@ class DataTables:
 
         if search_value:
             for col in self.columns:
-                conditions.append(getattr(self.sqla_object, col.column_name).like("%" + search_value + "%"))
+                tmp_column_name = col.column_name.split('.')
+                obj = getattr(self.sqla_object, tmp_column_name[0])
+                if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+                    # Ex: address.description
+                    sqla_obj = obj.mapper.class_
+                    column_name = "".join(tmp_column_name[1:])
+                    if not column_name:
+                        # find first primary key
+                        column_name = obj.property.table.primary_key.columns \
+                            .values()[0].name
+                else:
+                    sqla_obj = self.sqla_object
+                    column_name = col.column_name
+                conditions.append(get_attr(sqla_obj, column_name).like("%" + search_value + "%"))
 
             condition = or_(*conditions)
             self.query = self.query.filter(condition)
@@ -147,7 +163,20 @@ class DataTables:
                         self.request_values['sSortDir_'+str(i)]))
 
         for sort in sorting:
-            sort_name = self.sqla_object.__tablename__ + '.' + sort.name
+            tmp_sort_name = sort.name.split('.')
+            obj = getattr(self.sqla_object, tmp_sort_name[0])
+            if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+                 # Ex: address.description => description => addresses.description
+                sort_name = "".join(tmp_sort_name[1:])
+                if not sort_name:
+                    # Find first piramry key
+                    sort_name = obj.property.table.primary_key.columns \
+                            .values()[0].name
+                tablename = obj.property.table.name
+            else: #-> ColumnProperty
+                sort_name = sort.name
+                tablename = self.sqla_object.__tablename__
+            sort_name = "%s.%s" % (tablename, sort_name)
             self.query = self.query.order_by(
                 asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
 
