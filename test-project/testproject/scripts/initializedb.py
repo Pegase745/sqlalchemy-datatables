@@ -37,9 +37,9 @@ def main(argv=sys.argv):
     with transaction.manager:
         i = 0
         while i < 30:
-            address = Address(description='Address#' + str(i))
+            address = Address(description='Address#2' + str(i).rjust(2, "0"))
             DBSession.add(address)
-            user = User(name='User#' + str(i))
+            user = User(name='User#1' + str(i).rjust(2, "0"))
             user.address = address
             DBSession.add(user)
             sleep(1)

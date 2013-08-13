@@ -37,4 +37,4 @@ nosetests.xml
 # Virtualenv folders
 local
 include
-test-project/testproject/test-project.sqlite
+*.sqlite

@@ -53,7 +53,7 @@ def simple_example(request):
     columns.append(ColumnDT('id'))
     columns.append(ColumnDT('name', None, _upper))
     columns.append(ColumnDT('address.description'))
-    columns.append(ColumnDT('created_at', None , str))
+    columns.append(ColumnDT('created_at'))
 
     # defining the initial query depending on your purpose
     query = DBSession.query(User).join(Address).filter(Address.id > 14)

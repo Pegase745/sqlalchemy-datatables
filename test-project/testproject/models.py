@@ -32,6 +32,12 @@ class User(Base):
     def __init__(self, name):
         self.name = name
 
+    def __str__(self):
+        return u"%s" % self.name
+
+    def __repr__(self):
+        return '<%s#%s>' % (self.__class__.__name__, self.id)
+
 
 class Address(Base):
     __tablename__ = 'addresses'
@@ -42,5 +48,8 @@ class Address(Base):
     def __init__(self, description):
         self.description = description
 
+    def __str__(self):
+        return "%s" % (self.id)
+
     def __repr__(self):
-        pass
+        return '<%s#%s>' % (self.__class__.__name__, self.id)
