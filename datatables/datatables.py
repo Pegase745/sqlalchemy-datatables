@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy.sql.expression import asc, desc
-from sqlalchemy.sql import or_
+from sqlalchemy.sql import or_, and_
 from sqlalchemy.orm.properties import RelationshipProperty
 
 from collections import namedtuple
 
-ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'filter'])
+ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter'])
 
 
 def get_attr(sqla_object, attribute):
@@ -24,18 +24,20 @@ class ColumnDT(ColumnTuple):
     :type column_name: str
     :param mData: name of the mData property as defined in the DataTables javascript options (default None)
     :type mData: str
+    :param search_like: search criteria to like on without forgetting to escape the '%' character
+    :type search_like: str
     :param filter: the method needed to be executed on the cell values of the column 
     as an equivalent of a jinja2 filter (default None)
     :type filter: a callable object
 
     :returns: a ColumnDT object 
     """
-    def __new__(cls, column_name, mData=None, filter=str):
+    def __new__(cls, column_name, mData=None, search_like=None, filter=str):
         """
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable)
         """
-        return super(ColumnDT, cls).__new__(cls, column_name, mData, filter)
+        return super(ColumnDT, cls).__new__(cls, column_name, mData, search_like, filter)
 
 
 class DataTables:
@@ -69,7 +71,6 @@ class DataTables:
         self.cardinality = 0
 
         self.run()
-
 
     def output_result(self):
         """Outputs the results in the format needed by DataTables
@@ -115,38 +116,55 @@ class DataTables:
 
         self.results = formatted_results
 
-
     def filtering(self):
         """Construct the query, by adding filtering(LIKE) on all columns when the datatable's search box is used
         """
         search_value = self.request_values.get('sSearch')
-        conditions = []
+        condition = None
+        def search(idx, col):
+            tmp_column_name = col.column_name.split('.')
+            obj = getattr(self.sqla_object, tmp_column_name[0])
+            if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+                # Ex: address.description
+                sqla_obj = obj.mapper.class_
+                column_name = "".join(tmp_column_name[1:])
+                if not column_name:
+                    # find first primary key
+                    column_name = obj.property.table.primary_key.columns \
+                        .values()[0].name
+            else:
+                sqla_obj = self.sqla_object
+                column_name = col.column_name
+            return sqla_obj, column_name
 
         if search_value:
-            for col in self.columns:
-                tmp_column_name = col.column_name.split('.')
-                obj = getattr(self.sqla_object, tmp_column_name[0])
-                if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
-                    # Ex: address.description
-                    sqla_obj = obj.mapper.class_
-                    column_name = "".join(tmp_column_name[1:])
-                    if not column_name:
-                        # find first primary key
-                        column_name = obj.property.table.primary_key.columns \
-                            .values()[0].name
-                else:
-                    sqla_obj = self.sqla_object
-                    column_name = col.column_name
-                conditions.append(get_attr(sqla_obj, column_name).like("%" + search_value + "%"))
-
+            conditions = []
+            for idx, col in enumerate(self.columns):
+                sqla_obj, column_name = search(idx, col)
+                conditions.append(get_attr(sqla_obj, column_name).contains(search_value))
             condition = or_(*conditions)
+        conditions = []
+        for idx, col in enumerate(self.columns):
+            if self.request_values.get('sSearch_%s' % idx):
+                search_value2 = self.request_values.get('sSearch_%s' % idx)
+                sqla_obj, column_name = search(idx, col)
+                
+                if col.search_like:
+                    conditions.append(get_attr(sqla_obj, column_name).like(col.search_like % search_value2))
+                else:
+                    conditions.append(get_attr(sqla_obj, column_name).__eq__(search_value2))
+
+                if condition is not None:
+                    condition = and_(condition, and_(*conditions))
+                else:
+                    condition= and_(*conditions)
+
+        if condition is not None:
             self.query = self.query.filter(condition)
-            
             # count after filtering
             self.cardinality_filtered = self.query.count()
         else:
             self.cardinality_filtered = self.cardinality
-
 
     def sorting(self):
         """Construct the query, by adding sorting(ORDER BY) on the columns needed to be applied on
@@ -169,17 +187,21 @@ class DataTables:
                  # Ex: address.description => description => addresses.description
                 sort_name = "".join(tmp_sort_name[1:])
                 if not sort_name:
-                    # Find first piramry key
+                    # Find first primary key
                     sort_name = obj.property.table.primary_key.columns \
                             .values()[0].name
                 tablename = obj.property.table.name
             else: #-> ColumnProperty
                 sort_name = sort.name
-                tablename = self.sqla_object.__tablename__
+
+                if hasattr(self.sqla_object, "__tablename__"):
+                    tablename = self.sqla_object.__tablename__
+                else:
+                    tablename = self.sqla_object.__table__.name
+
             sort_name = "%s.%s" % (tablename, sort_name)
             self.query = self.query.order_by(
                 asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
-
 
     def paging(self):
         """Construct the query, by slicing the results in order to limit rows showed on the page, and paginate the rest

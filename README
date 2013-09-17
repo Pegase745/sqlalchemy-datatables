@@ -2,7 +2,7 @@ sqlalchemy-datatables [![Build Status](https://travis-ci.org/Pegase745/sqlalchem
 =====================
 
 ## Usage
-The package is available on [PyPI] (https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.2)
+The package is available on [PyPI] (https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.4)
 
 > pip install sqlalchemy-datatables
 
@@ -107,7 +107,14 @@ $ $venv/bin/pserve development.ini
 Open a web browser and got to the url localhost:6543
 ```
 
+
 ## Changelog
+
+#### v0.1.4 (17/09/2013)####
+- Searching individual columns, with special like possibilities
+
+#### v0.1.3 (16/09/2013)####
+- Fixing setup.py's README error on develop 
 
 #### v0.1.2 (13/08/2013)####
 - Fixing errors due to relationships (filtering, sorting)
