@@ -2,6 +2,8 @@
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_, and_
 from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.sql.expression import cast
+from sqlalchemy import String
 
 from collections import namedtuple
 
@@ -124,7 +126,10 @@ class DataTables:
         def search(idx, col):
             tmp_column_name = col.column_name.split('.')
             obj = getattr(self.sqla_object, tmp_column_name[0])
-            if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+            if not hasattr(obj, "property"): # Ex: hybrid_property or property
+                sqla_obj = self.sqla_object
+                column_name = col.column_name
+            elif isinstance(obj.property, RelationshipProperty): #Ex: ForeignKey
                 # Ex: address.description
                 sqla_obj = obj.mapper.class_
                 column_name = "".join(tmp_column_name[1:])
@@ -140,19 +145,21 @@ class DataTables:
         if search_value:
             conditions = []
             for idx, col in enumerate(self.columns):
-                sqla_obj, column_name = search(idx, col)
-                conditions.append(get_attr(sqla_obj, column_name).contains(search_value))
+                if self.request_values.get('bSearchable_%s' % idx) in (
+                        True, 'true'):
+                    sqla_obj, column_name = search(idx, col)
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
-            if self.request_values.get('sSearch_%s' % idx):
+            if self.request_values.get('sSearch_%s' % idx) in (True, 'true'):
                 search_value2 = self.request_values.get('sSearch_%s' % idx)
                 sqla_obj, column_name = search(idx, col)
                 
                 if col.search_like:
-                    conditions.append(get_attr(sqla_obj, column_name).like(col.search_like % search_value2))
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).like(col.search_like % search_value2))
                 else:
-                    conditions.append(get_attr(sqla_obj, column_name).__eq__(search_value2))
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).__eq__(search_value2))
 
                 if condition is not None:
                     condition = and_(condition, and_(*conditions))
@@ -183,7 +190,14 @@ class DataTables:
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
             obj = getattr(self.sqla_object, tmp_sort_name[0])
-            if isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+            if not hasattr(obj, "property"): #hybrid_property or property
+                sort_name = sort.name
+
+                if hasattr(self.sqla_object, "__tablename__"):
+                    tablename = self.sqla_object.__tablename__
+                else:
+                    tablename = self.sqla_object.__table__.name
+            elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
                  # Ex: address.description => description => addresses.description
                 sort_name = "".join(tmp_sort_name[1:])
                 if not sort_name:

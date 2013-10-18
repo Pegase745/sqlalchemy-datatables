@@ -51,7 +51,7 @@ def simple_example(request):
     # defining columns
     columns = []
     columns.append(ColumnDT('id'))
-    columns.append(ColumnDT('name', None, _upper))
+    columns.append(ColumnDT('name', filter=_upper))
     columns.append(ColumnDT('address.description'))
     columns.append(ColumnDT('created_at'))
 

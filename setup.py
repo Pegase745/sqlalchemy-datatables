@@ -9,7 +9,7 @@ setup(
     name='sqlalchemy-datatables',
     version=__VERSION__,
     description='SQLAlchemy integration of jQuery DataTables',
-    long_description=open('README').read(),
+    long_description=open('README.rst').read(),
     license='MIT',
     keywords='sqlalchemy datatables jquery pyramid',
     author='Michel Nemnom',
