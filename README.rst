@@ -2,14 +2,14 @@
 sqlalchemy-datatables |Build Status|
 ====================================
 
-.. |Build Status| image:: https://travis-ci.org/Pegase745/sqlalchemy-datatables.png?branch=develop
+.. |Build Status| image:: https://travis-ci.org/Pegase745/sqlalchemy-datatables.png?branch=master
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
 
 
 Usage
 -----
 
-The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.4>`_
+The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.5>`_
 
 .. code-block:: bash
 
@@ -68,9 +68,9 @@ A simple example
         # defining columns
         columns = []
         columns.append(ColumnDT('id'))
-        columns.append(ColumnDT('name', None, _upper))
+        columns.append(ColumnDT('name', filter=_upper))
         columns.append(ColumnDT('address.description')) # where address is an SQLAlchemy Relation
-        columns.append(ColumnDT('created_at', None , str))
+        columns.append(ColumnDT('created_at', filter=str))
 
         # defining the initial query depending on your purpose
         query = DBSession.query(User).join(Address).filter(Address.id > 14)
@@ -131,6 +131,14 @@ Testing the Pyramid based ''test-project''
 
 Changelog
 ---------
+
+**v0.1.5 (18/10/2013)**
+
+
+-  Become aware of bSearchable_* properties, while doing a global search
+-  Fixed bug throwed while searching Id columns
+-  Fixing bug throwed while showing in ColumnDT, an SQLAlchemy's @hybrid_property or a Python @property
+-  README modifications
 
 **v0.1.4 (17/09/2013)**
 

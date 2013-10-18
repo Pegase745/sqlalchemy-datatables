@@ -147,8 +147,8 @@ class DataTables:
             for idx, col in enumerate(self.columns):
                 if self.request_values.get('bSearchable_%s' % idx) in (
                         True, 'true'):
-                sqla_obj, column_name = search(idx, col)
-                conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value))
+                    sqla_obj, column_name = search(idx, col)
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
