@@ -9,7 +9,7 @@ sqlalchemy-datatables |Build Status|
 Usage
 -----
 
-The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.5>`_
+The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.6>`_
 
 .. code-block:: bash
 
@@ -131,6 +131,12 @@ Testing the Pyramid based ''test-project''
 
 Changelog
 ---------
+
+**v0.1.6 (16/12/2013)**
+
+
+-  Allow package to run with python 3.*
+-  README modifications
 
 **v0.1.5 (18/10/2013)**
 

@@ -1,9 +1,20 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
-__VERSION__ = [line for line in file('datatables/__init__.py', 'rb') \
-               if line.startswith('__VERSION__')][0].split(\
-               '=')[1].strip().lstrip('\'').rstrip('\'')
+import sys
+
+if sys.version_info >= (3,0):
+    def my_open(path, mode):
+        return open(path, mode, newline='')
+else:
+    def my_open(path, mode):
+        return open(path, mode+'b')
+
+
+__VERSION__ = [line for line in my_open('datatables/__init__.py', 'r') \
+    if line.startswith('__VERSION__')][0].split(\
+    '=')[1].strip().lstrip('\'').rstrip('\'')
+
 
 setup(
     name='sqlalchemy-datatables',
@@ -21,14 +32,21 @@ setup(
     install_requires=['sqlalchemy'],
     py_modules=['datatables'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Pyramid',
+        'Framework :: Flask',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',

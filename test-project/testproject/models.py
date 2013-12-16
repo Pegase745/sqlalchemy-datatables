@@ -1,4 +1,7 @@
+from __future__ import absolute_import, unicode_literals 
+
 import datetime, json
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -33,7 +36,7 @@ class User(Base):
         self.name = name
 
     def __str__(self):
-        return u"%s" % self.name
+        return "%s" % self.name
 
     def __repr__(self):
         return '<%s#%s>' % (self.__class__.__name__, self.id)
