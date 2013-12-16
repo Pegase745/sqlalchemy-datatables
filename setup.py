@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 import sys
 
-if sys.version_info<= (2,7):
+if sys.version_info < (2,8):
     f = open('datatables/__init__.py', 'rb')
 else:
     f = open('datatables/__init__.py', 'rb', encoding="utf-8")
@@ -40,15 +40,11 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.0',
-        'Programming Language :: Python :: 3.1',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
