@@ -3,13 +3,15 @@ from setuptools import setup, find_packages
 
 import sys
 
-if sys.version_info < (2,8):
-    f = open('datatables/__init__.py', 'rb')
+if sys.version_info >= (3,0):
+    def my_open(path, mode):
+        return open(path, mode, newline='')
 else:
-    f = open('datatables/__init__.py', 'rb', encoding="utf-8")
+    def my_open(path, mode):
+        return open(path, mode+'b')
 
 
-__VERSION__ = [line for line in f \
+__VERSION__ = [line for line in my_open('datatables/__init__.py', 'r') \
     if line.startswith('__VERSION__')][0].split(\
     '=')[1].strip().lstrip('\'').rstrip('\'')
 
