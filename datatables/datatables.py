@@ -2,10 +2,14 @@
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_, and_
 from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import String
 
 from collections import namedtuple
+from logging import getLogger
+
+log = getLogger(__file__)
 
 ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter'])
 
@@ -15,7 +19,10 @@ def get_attr(sqla_object, attribute):
     """
     output = sqla_object
     for x in attribute.split('.'):
-        output = getattr(output, x)
+        if type(output) is InstrumentedList:
+            output = ', '.join([getattr(elem, x) for elem in output])
+        else:
+            output = getattr(output, x)
     return output
 
 
