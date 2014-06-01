@@ -1,10 +1,15 @@
-====================================
-sqlalchemy-datatables |Build Status|
-====================================
+============================================================
+sqlalchemy-datatables |Build Status| |PyPi Version| |Gittip|
+============================================================
 
-.. |Build Status| image:: https://travis-ci.org/Pegase745/sqlalchemy-datatables.png?branch=master
+.. |Build Status| image:: http://img.shields.io/travis/Pegase745/sqlalchemy-datatables.svg?style=flat
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
 
+.. |PyPi Version| image:: http://img.shields.io/pypi/v/sqlalchemy-datatables.svg?style=flat
+    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
+    
+.. |Gittip| image:: https://img.shields.io/gittip/Pegase745.svg?style=flat
+    :target: https://www.gittip.com/Pegase745/
 
 Usage
 -----
@@ -198,8 +203,3 @@ BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/Pegase745/sqlalchemy-datatables/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
-
