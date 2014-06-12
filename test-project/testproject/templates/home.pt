@@ -7,23 +7,7 @@
     <meta name="description" content="SQLAlchemy & jQuery DataTables example">
     <meta name="author" content="Michel Nemnom">
 
-    <!-- Le styles -->
-    <link href="https://raw.github.com/twbs/bootstrap/v2.3.2/docs/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="https://raw.github.com/twbs/bootstrap/v2.3.2/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
-
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_disabled.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_enabled.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/back_enabled_hover.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_disabled.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_enabled.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/forward_enabled_hover.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_asc.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_asc_disabled.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_both.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_desc.png" rel="stylesheet">
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/images/sort_desc_disabled.png" rel="stylesheet">
+    <link href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" rel="stylesheet">
   </head>
 
   <body>
@@ -33,7 +17,7 @@
         <div class="span12">
           <h1>Welcome to <strong>${project}</strong></h1>
           <h2>Simple example</h2>
-          <table class="table" id="simple-example">
+          <table id="simple-example" class="display" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>Id</th>
@@ -43,25 +27,15 @@
               </tr>
             </thead>
             <tbody></tbody>
+            <tfoot>
+              <tr>
+                <th>Id</th>
+                <th>User name</th>
+                <th>Address description</th>
+                <th>Created at</th>
+              </tr>
+            </tfoot>			
           </table>
-        </div>
-      </div>
-      <!-- Relation Example -->
-      <div class="row">
-        <div class="span12">
-          <!-- <h2>Relation example</h2>
-          <table class="table" id="relation-example">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>User name</th>
-                <th>Address Id</th>
-                <th>Address description</th>
-                <th>Created at</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table> -->
         </div>
       </div>
     </div> <!-- /container -->
@@ -69,21 +43,34 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>	
+
+	
     <script type="text/javascript" charset="utf-8">
       $(document).ready(function(){
-        $('#simple-example').dataTable({
+		// Setup - add a text input to each footer cell
+		$('#simple-example tfoot th').each( function () {
+			var title = $('#simple-example thead th').eq( $(this).index() ).text();
+			$(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+		});	  
+	  
+        var table = $('#simple-example').DataTable({
           "bProcessing": true,
           "bServerSide": true,
           "sAjaxSource": "${request.route_path('simple_example')}"
         });
-
-        $('#relation-example').dataTable({
-          "bProcessing": true,
-          "bServerSide": true,
-          "sAjaxSource": "${request.route_path('relation_example')}"
-        });
+		
+		// Apply the filter
+		table.columns().eq( 0 ).each( function ( colIdx ) {
+			$( 'input', table.column( colIdx ).footer() ).on( 'keyup change', function () {
+				table
+					.column( colIdx )
+					.search( this.value )
+					.draw();
+			});
+		});
       });
     </script>
   </body>

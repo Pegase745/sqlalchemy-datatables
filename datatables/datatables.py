@@ -34,7 +34,7 @@ class ColumnDT(ColumnTuple):
 
     :returns: a ColumnDT object 
     """
-    def __new__(cls, column_name, mData=None, search_like=None, filter=str):
+    def __new__(cls, column_name, mData=None, search_like='1', filter=str):
         """
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable)
@@ -152,12 +152,14 @@ class DataTables:
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
-            if self.request_values.get('sSearch_%s' % idx) in (True, 'true'):
-                search_value2 = self.request_values.get('sSearch_%s' % idx)
+            search_value2 = self.request_values.get('sSearch_%s' % idx)
+            
+            if search_value2 is not None:
+
                 sqla_obj, column_name = search(idx, col)
                 
                 if col.search_like:
-                    conditions.append(cast(get_attr(sqla_obj, column_name), String).like(col.search_like % search_value2))
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value2))
                 else:
                     conditions.append(cast(get_attr(sqla_obj, column_name), String).__eq__(search_value2))
 
