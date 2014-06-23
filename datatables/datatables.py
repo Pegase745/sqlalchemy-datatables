@@ -112,7 +112,10 @@ class DataTables:
                 col = self.columns[j]
                 tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    tmp_row = col.filter(tmp_row)
+                    if isinstance(tmp_row, unicode):
+                        tmp_row = col.filter(tmp_row.encode('utf-8'))
+                    else:
+                        tmp_row = col.filter(tmp_row)
                 row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
 
