@@ -183,7 +183,7 @@ class DataTables:
         Order = namedtuple('order', ['name', 'dir'])
 
         if self.request_values.get('iSortCol_0') \
-            and self.request_values.get('iSortingCols') > 0:
+            and int(self.request_values.get('iSortingCols')) > 0:
 
             for i in range(int(self.request_values['iSortingCols'])):
                 sorting.append(Order( self.columns[int(self.request_values['iSortCol_'+str(i)])].column_name,
@@ -191,34 +191,11 @@ class DataTables:
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
-            obj = getattr(self.sqla_object, tmp_sort_name[0])
-            if not hasattr(obj, "property"): #hybrid_property or property
-                sort_name = sort.name
-
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
-            elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
-                 # Ex: address.description => description => addresses.description
-                sort_name = "".join(tmp_sort_name[1:])
-                if not sort_name:
-                    # Find first primary key
-                    sort_name = obj.property.table.primary_key.columns \
-                            .values()[0].name
-                tablename = obj.property.table.name
-            else: #-> ColumnProperty
-                sort_name = sort.name
-
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
-
-            sort_name = "%s.%s" % (tablename, sort_name)
-            self.query = self.query.order_by(
-                asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
-
+            if sort.dir == 'asc':
+                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).asc())
+            else:
+                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).desc())
+                
     def paging(self):
         """Construct the query, by slicing the results in order to limit rows showed on the page, and paginate the rest
         """
