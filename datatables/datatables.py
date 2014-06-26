@@ -67,7 +67,16 @@ class DataTables:
     def __init__(self, request, sqla_object, query, columns):
         """Initializes the object with the attributes needed, and runs the query
         """
-        self.request_values = request.GET
+        self.request_values = dict(request.GET)
+
+        for key, value in self.request_values.items():
+            try:
+                self.request_values[key] = int(value)
+            except ValueError:
+                if value in ("true", "false"):
+                    self.request_values[key] = value == "true"
+                
+                
         self.sqla_object = sqla_object
         self.query = query
         self.columns = columns
