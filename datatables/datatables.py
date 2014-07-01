@@ -11,6 +11,11 @@ from logging import getLogger
 
 log = getLogger(__file__)
 
+import sys
+
+if sys.version_info>(3,0):
+    unicode = str
+
 ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter'])
 
 
@@ -128,7 +133,7 @@ class DataTables:
                 col = self.columns[j]
                 tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    if isinstance(tmp_row, unicode):
+                    if sys.version_info<(3,0) and isinstance(tmp_row, unicode):
                         tmp_row = col.filter(tmp_row.encode('utf-8'))
                     else:
                         tmp_row = col.filter(tmp_row)
