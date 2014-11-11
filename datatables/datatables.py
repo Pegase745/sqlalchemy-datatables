@@ -119,6 +119,8 @@ class DataTables:
                 col = self.columns[j]
                 tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
+                    if hasattr(tmp_row, 'encode'):
+                        tmp_row = tmp_row.encode('utf-8')
                     tmp_row = col.filter(tmp_row)
                 row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
@@ -196,29 +198,37 @@ class DataTables:
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
-            obj = getattr(self.sqla_object, tmp_sort_name[0])
-            if not hasattr(obj, "property"): #hybrid_property or property
-                sort_name = sort.name
+            for tmp_name in tmp_sort_name:
+                #iterate over the list so we can support things like x.y.z.a
+                if tmp_sort_name.index(tmp_name) == 0:
+                    obj = getattr(self.sqla_object, tmp_name)
+                    parent = self.sqla_object
+                elif isinstance(obj.property, RelationshipProperty):
+                    #otherwise try and see if we can percolate down the list for relationships of relationships.
+                    parent = obj.property.mapper.class_
+                    obj = getattr(parent, tmp_name)
 
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
-            elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
-                 # Ex: address.description => description => addresses.description
-                sort_name = "".join(tmp_sort_name[1:])
-                if not sort_name:
-                    # Find first primary key
-                    sort_name = obj.property.table.primary_key.columns \
-                            .values()[0].name
-                tablename = obj.property.table.name
-            else: #-> ColumnProperty
-                sort_name = sort.name
+                if not hasattr(obj, "property"): #hybrid_property or property
+                    sort_name = tmp_name
+                    if hasattr(parent, "__tablename__"):
+                        tablename = parent.__tablename__
+                    else:
+                        tablename = parent.__table__.name
+                elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+                    # Ex: address.description => description => addresses.description
+                    sort_name = tmp_name
+                    if not sort_name:
+                        # Find first primary key
+                        sort_name = obj.property.table.primary_key.columns \
+                                .values()[0].name
+                    tablename = obj.property.table.name
+                else: #-> ColumnProperty
+                    sort_name = tmp_name
 
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
+                    if hasattr(parent, "__tablename__"):
+                        tablename = parent.__tablename__
+                    else:
+                        tablename = parent.__table__.name
 
             sort_name = "%s.%s" % (tablename, sort_name)
             self.query = self.query.order_by(
