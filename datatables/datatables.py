@@ -199,8 +199,7 @@ class DataTables:
 
         Order = namedtuple('order', ['name', 'dir'])
 
-        if self.request_values.get('iSortCol_0') \
-            and self.request_values.get('iSortingCols') > 0:
+        if self.request_values.get('iSortingCols') > 0:
 
             for i in range(int(self.request_values['iSortingCols'])):
                 sorting.append(Order( self.columns[int(self.request_values['iSortCol_'+str(i)])].column_name,
