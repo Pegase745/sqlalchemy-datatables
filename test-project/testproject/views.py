@@ -7,9 +7,9 @@ from .models import (
     DBSession,
     User,
     Address,
-    )
+)
 
-from datatables import ColumnDT, DataTables 
+from datatables import ColumnDT, DataTables
 
 
 conn_err_msg = """\
@@ -17,7 +17,7 @@ Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
 1.  You may need to run the "initialize_test-project_db" script
-    to initialize your database tables.  Check your virtual 
+    to initialize your database tables.  Check your virtual
     environment's "bin" directory for this script and try to run it.
 
 2.  Your database server may not be running.  Check that the
@@ -59,9 +59,9 @@ def simple_example(request):
     query = DBSession.query(User).join(Address).filter(Address.id > 14)
 
     # instantiating a DataTable for the query and table needed
-    rowTable = DataTables(request, User, query, columns) 
+    rowTable = DataTables(request, User, query, columns)
 
-    # returns what is needed by DataTable 
+    # returns what is needed by DataTable
     return rowTable.output_result()
 
 

@@ -1,6 +1,6 @@
-from __future__ import absolute_import, unicode_literals 
+from __future__ import absolute_import, unicode_literals
 
-import datetime, json
+import datetime
 
 from sqlalchemy import (
     Column,
@@ -8,7 +8,7 @@ from sqlalchemy import (
     Text,
     DateTime,
     ForeignKey,
-    )
+)
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -17,7 +17,7 @@ from sqlalchemy.orm import (
     sessionmaker,
     relationship,
     backref,
-    )
+)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 

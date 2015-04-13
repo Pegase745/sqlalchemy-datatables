@@ -15,31 +15,32 @@ requires = [
     'pyramid_chameleon',
     'zope.sqlalchemy',
     'waitress',
-    ]
+]
 
-setup(name='test-project',
-      version='0.0',
-      description='test-project',
-      long_description=README + '\n\n' + CHANGES,
-      classifiers=[
+setup(
+    name='test-project',
+    version='0.0',
+    description='test-project',
+    long_description=README + '\n\n' + CHANGES,
+    classifiers=[
         "Programming Language :: Python",
         "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
-      author='',
-      author_email='',
-      url='',
-      keywords='web wsgi bfg pylons pyramid',
-      packages=find_packages(),
-      include_package_data=True,
-      zip_safe=False,
-      test_suite='testproject',
-      install_requires=requires,
-      entry_points="""\
-      [paste.app_factory]
-      main = testproject:main
-      [console_scripts]
-      initialize_test-project_db = testproject.scripts.initializedb:main
-      """,
-      )
+    ],
+    author='',
+    author_email='',
+    url='',
+    keywords='web wsgi bfg pylons pyramid',
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
+    test_suite='testproject',
+    install_requires=requires,
+    entry_points="""\
+    [paste.app_factory]
+    main = testproject:main
+    [console_scripts]
+    initialize_test-project_db = testproject.scripts.initializedb:main
+    """,
+)

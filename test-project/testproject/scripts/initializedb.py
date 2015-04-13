@@ -8,14 +8,14 @@ from sqlalchemy import engine_from_config
 from pyramid.paster import (
     get_appsettings,
     setup_logging,
-    )
+)
 
 from ..models import (
     DBSession,
     User,
     Address,
     Base,
-    )
+)
 
 
 def usage(argv):
@@ -43,4 +43,4 @@ def main(argv=sys.argv):
             user.address = address
             DBSession.add(user)
             sleep(1)
-            i+=1
+            i += 1

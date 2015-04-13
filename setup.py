@@ -1,18 +1,18 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
-
 import sys
 
-if sys.version_info >= (3,0):
+from setuptools import setup, find_packages
+
+if sys.version_info >= (3, 0):
     def my_open(path, mode):
         return open(path, mode, newline='')
 else:
     def my_open(path, mode):
-        return open(path, mode+'b')
+        return open(path, mode + 'b')
 
 
-__VERSION__ = [line for line in my_open('datatables/__init__.py', 'r') \
-    if line.startswith('__VERSION__')][0].split(\
+__VERSION__ = [line for line in my_open('datatables/__init__.py', 'r')
+               if line.startswith('__VERSION__')][0].split(
     '=')[1].strip().lstrip('\'').rstrip('\'')
 
 
