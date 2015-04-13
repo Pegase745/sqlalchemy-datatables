@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_, and_
 from sqlalchemy.orm.properties import RelationshipProperty
@@ -10,6 +12,9 @@ from collections import namedtuple
 from logging import getLogger
 
 log = getLogger(__file__)
+
+if sys.version_info>(3,0):
+    unicode = str
 
 ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter'])
 
@@ -41,7 +46,7 @@ class ColumnDT(ColumnTuple):
 
     :returns: a ColumnDT object 
     """
-    def __new__(cls, column_name, mData=None, search_like=None, filter=str):
+    def __new__(cls, column_name, mData=None, search_like='1', filter=str):
         """
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable)
@@ -128,7 +133,7 @@ class DataTables:
                 col = self.columns[j]
                 tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    if isinstance(tmp_row, unicode):
+                    if sys.version_info<(3,0) and isinstance(tmp_row, unicode):
                         tmp_row = col.filter(tmp_row.encode('utf-8'))
                     else:
                         tmp_row = col.filter(tmp_row)
@@ -171,12 +176,14 @@ class DataTables:
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
-            if self.request_values.get('sSearch_%s' % idx) in (True, 'true'):
-                search_value2 = self.request_values.get('sSearch_%s' % idx)
+            search_value2 = self.request_values.get('sSearch_%s' % idx)
+            
+            if search_value2 is not None:
+
                 sqla_obj, column_name = search(idx, col)
                 
                 if col.search_like:
-                    conditions.append(cast(get_attr(sqla_obj, column_name), String).like(col.search_like % search_value2))
+                    conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value2))
                 else:
                     conditions.append(cast(get_attr(sqla_obj, column_name), String).__eq__(search_value2))
 
@@ -207,34 +214,11 @@ class DataTables:
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
-            obj = getattr(self.sqla_object, tmp_sort_name[0])
-            if not hasattr(obj, "property"): #hybrid_property or property
-                sort_name = sort.name
-
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
-            elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
-                 # Ex: address.description => description => addresses.description
-                sort_name = "".join(tmp_sort_name[1:])
-                if not sort_name:
-                    # Find first primary key
-                    sort_name = obj.property.table.primary_key.columns \
-                            .values()[0].name
-                tablename = obj.property.table.name
-            else: #-> ColumnProperty
-                sort_name = sort.name
-
-                if hasattr(self.sqla_object, "__tablename__"):
-                    tablename = self.sqla_object.__tablename__
-                else:
-                    tablename = self.sqla_object.__table__.name
-
-            sort_name = "%s.%s" % (tablename, sort_name)
-            self.query = self.query.order_by(
-                asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
-
+            if sort.dir == 'asc':
+                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).asc())
+            else:
+                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).desc())
+                
     def paging(self):
         """Construct the query, by slicing the results in order to limit rows showed on the page, and paginate the rest
         """
