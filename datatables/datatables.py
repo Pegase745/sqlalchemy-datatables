@@ -4,6 +4,7 @@ import sys
 from sqlalchemy.sql.expression import asc, desc
 from sqlalchemy.sql import or_, and_
 from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import String
@@ -16,7 +17,7 @@ log = getLogger(__file__)
 if sys.version_info>(3,0):
     unicode = str
 
-ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter'])
+ColumnTuple = namedtuple('ColumnDT', ['column_name', 'mData', 'search_like', 'filter', 'searchable'])
 
 
 def get_attr(sqla_object, attribute):
@@ -43,15 +44,17 @@ class ColumnDT(ColumnTuple):
     :param filter: the method needed to be executed on the cell values of the column 
     as an equivalent of a jinja2 filter (default None)
     :type filter: a callable object
+    :param searchable: Enable or disable a column to be searchable server-side. (default True)
+    :type searchable: bool
 
     :returns: a ColumnDT object 
     """
-    def __new__(cls, column_name, mData=None, search_like='1', filter=str):
+    def __new__(cls, column_name, mData=None, search_like=None, filter=str, searchable=True):
         """
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable)
         """
-        return super(ColumnDT, cls).__new__(cls, column_name, mData, search_like, filter)
+        return super(ColumnDT, cls).__new__(cls, column_name, mData, search_like, filter, searchable)
 
 
 class DataTables:
@@ -133,10 +136,9 @@ class DataTables:
                 col = self.columns[j]
                 tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    if sys.version_info<(3,0) and isinstance(tmp_row, unicode):
+                    if sys.version_info<(3,0) and hasattr(tmp_row, 'encode'):
                         tmp_row = col.filter(tmp_row.encode('utf-8'))
-                    else:
-                        tmp_row = col.filter(tmp_row)
+                    tmp_row = col.filter(tmp_row)
                 row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
 
@@ -148,29 +150,39 @@ class DataTables:
         search_value = self.request_values.get('sSearch')
         condition = None
         def search(idx, col):
+            #TODO: fix for @hybrid properties that reference json or similar columns.
             tmp_column_name = col.column_name.split('.')
-            obj = getattr(self.sqla_object, tmp_column_name[0])
-            if not hasattr(obj, "property"): # Ex: hybrid_property or property
-                sqla_obj = self.sqla_object
-                column_name = col.column_name
-            elif isinstance(obj.property, RelationshipProperty): #Ex: ForeignKey
-                # Ex: address.description
-                sqla_obj = obj.mapper.class_
-                column_name = "".join(tmp_column_name[1:])
-                if not column_name:
-                    # find first primary key
-                    column_name = obj.property.table.primary_key.columns \
-                        .values()[0].name
-            else:
-                sqla_obj = self.sqla_object
-                column_name = col.column_name
+            for tmp_name in tmp_column_name:
+                #This handles the x.y.z.a option
+                if tmp_column_name.index(tmp_name) == 0:
+                    obj = getattr(self.sqla_object, tmp_name)
+                    parent = self.sqla_object
+                elif isinstance(obj.property, RelationshipProperty):
+                    #otherwise try and see if we can percolate down the list for relationships of relationships.
+                    parent = obj.property.mapper.class_
+                    obj = getattr(parent, tmp_name)
+
+                if not hasattr(obj, 'property'): # Ex: hybrid_property or property
+                    sqla_obj = parent
+                    column_name = tmp_name
+                elif isinstance(obj.property, RelationshipProperty): #Ex: ForeignKey
+                    # Ex: address.description
+                    sqla_obj = obj.mapper.class_
+                    column_name = tmp_name
+                    if not column_name:
+                        # find first primary key
+                        column_name = obj.property.table.primary_key.columns \
+                            .values()[0].name
+                else:
+                    sqla_obj = parent
+                    column_name = tmp_name
             return sqla_obj, column_name
 
         if search_value:
             conditions = []
             for idx, col in enumerate(self.columns):
                 if self.request_values.get('bSearchable_%s' % idx) in (
-                        True, 'true'):
+                        True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
                     conditions.append(cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value))
             condition = or_(*conditions)
@@ -214,11 +226,42 @@ class DataTables:
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
-            if sort.dir == 'asc':
-                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).asc())
-            else:
-                self.query = self.query.order_by(getattr(self.sqla_object,tmp_sort_name[0]).desc())
-                
+            for tmp_name in tmp_sort_name:
+                #iterate over the list so we can support things like x.y.z.a
+                if tmp_sort_name.index(tmp_name) == 0:
+                    obj = getattr(self.sqla_object, tmp_name)
+                    parent = self.sqla_object
+                elif isinstance(obj.property, RelationshipProperty):
+                    #otherwise try and see if we can percolate down the list for relationships of relationships.
+                    parent = obj.property.mapper.class_
+                    obj = getattr(parent, tmp_name)
+
+                if not hasattr(obj, "property"): #hybrid_property or property
+                    sort_name = tmp_name
+                    if hasattr(parent, "__tablename__"):
+                        tablename = parent.__tablename__
+                    else:
+                        tablename = parent.__table__.name
+                elif isinstance(obj.property, RelationshipProperty): # Ex: ForeignKey
+                    # Ex: address.description => description => addresses.description
+                    sort_name = tmp_name
+                    if not sort_name:
+                        # Find first primary key
+                        sort_name = obj.property.table.primary_key.columns \
+                                .values()[0].name
+                    tablename = obj.property.table.name
+                else: #-> ColumnProperty
+                    sort_name = tmp_name
+
+                    if hasattr(parent, "__tablename__"):
+                        tablename = parent.__tablename__
+                    else:
+                        tablename = parent.__table__.name
+
+            sort_name = "%s.%s" % (tablename, sort_name)
+            self.query = self.query.order_by(
+                asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
+
     def paging(self):
         """Construct the query, by slicing the results in order to limit rows showed on the page, and paginate the rest
         """
