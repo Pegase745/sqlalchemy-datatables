@@ -156,8 +156,8 @@ Changelog
 -  Changed sorting algorithm to rely solely on SQLAlchemy to do the joining (#16)
 -  Ability to override searchability server side (#20)
 -  Ability to sort by relationships of relationships (#20)
-- Adding MANIFEST file
-- Adding coverage test with Coveralls
+-  Adding MANIFEST file
+-  Adding coverage test with Coveralls
 
 **v0.1.6 (16/12/2013)**
 
