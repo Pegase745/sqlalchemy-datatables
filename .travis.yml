@@ -8,4 +8,8 @@ python:
 install:
   - pip install . --use-mirrors
   - pip install -r requirements.txt --use-mirrors
-script: nosetests
+  - pip install coveralls
+script:
+  coverage run --source=datatables setup.py test
+after_success:
+  coveralls

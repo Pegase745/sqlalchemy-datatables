@@ -31,6 +31,7 @@ setup(
     zip_safe=False,
     install_requires=['sqlalchemy'],
     py_modules=['datatables'],
+    test_suite="datatables",
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

@@ -1,20 +1,27 @@
-============================================================
-sqlalchemy-datatables |Build Status| |PyPi Version| |Gittip|
-============================================================
+============================================================================================
+sqlalchemy-datatables |PyPi Version| |Build Status| |Scrutinizer| |Coveralls| |Requirements|
+============================================================================================
 
-.. |Build Status| image:: http://img.shields.io/travis/Pegase745/sqlalchemy-datatables.svg?style=flat
+.. |PyPi Version| image:: https://img.shields.io/pypi/v/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
+
+.. |Build Status| image:: https://img.shields.io/travis/Pegase745/sqlalchemy-datatables.svg?style=flat-square
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
 
-.. |PyPi Version| image:: http://img.shields.io/pypi/v/sqlalchemy-datatables.svg?style=flat
-    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
-    
-.. |Gittip| image:: https://img.shields.io/gittip/Pegase745.svg?style=flat
-    :target: https://www.gittip.com/Pegase745/
+.. |Scrutinizer| image:: https://img.shields.io/scrutinizer/g/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://scrutinizer-ci.com/g/Pegase745/sqlalchemy-datatables
+
+.. |Coveralls| image:: https://img.shields.io/coveralls/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://coveralls.io/r/Pegase745/sqlalchemy-datatables
+
+.. |Requirements| image:: https://img.shields.io/requires/github/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://requires.io/github/Pegase745/sqlalchemy-datatables/requirements/?branch=master
+    :alt: Requirements Status
 
 Usage
 -----
 
-The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables/0.1.6>`_
+The package is available on `PyPI <https://pypi.python.org/pypi/sqlalchemy-datatables>`_
 
 .. code-block:: bash
 
@@ -28,9 +35,9 @@ A simple example
 
 .. code-block:: python
 
-    class User(Base): 
-        __tablename__ = 'users' 
-        
+    class User(Base):
+        __tablename__ = 'users'
+
         id          = Column(Integer, primary_key=True)::
         name        = Column(Text, unique=True)
         created_at  = Column(DateTime, default=datetime.datetime.utcnow)
@@ -81,9 +88,9 @@ A simple example
         query = DBSession.query(User).join(Address).filter(Address.id > 14)
 
         # instantiating a DataTable for the query and table needed
-        rowTable = DataTables(request, User, query, columns) 
+        rowTable = DataTables(request, User, query, columns)
 
-        # returns what is needed by DataTable 
+        # returns what is needed by DataTable
         return rowTable.output_result()
 
 
@@ -120,10 +127,10 @@ Testing the Pyramid based ''test-project''
 
 .. code-block:: bash
 
-    $ git clone 
+    $ git clone
     $ virtualenv --no-site-packages sqlalchemy-datatables
     $ cd sqlalchemy-datatables/
-    Once only: 
+    Once only:
     $ bin/python setup.py develop
 
     $ cd test-project/
@@ -137,10 +144,25 @@ Testing the Pyramid based ''test-project''
 Changelog
 ---------
 
+**v0.1.7 (14/04/2015)**
+
+
+-  Allow lists to be printed as well on relationships, not just one to one (#11)
+-  Fix to unicode problem in 2.7 (#13)
+-  Properly type request values for python 3.4 (#14)
+-  Works with python 3.4 (#15)
+-  Explicit imports (#16)
+-  Fixed searches per column, simplified example, updated js (#16)
+-  Changed sorting algorithm to rely solely on SQLAlchemy to do the joining (#16)
+-  Ability to override searchability server side (#20)
+-  Ability to sort by relationships of relationships (#20)
+- Adding MANIFEST file
+- Adding coverage test with Coveralls
+
 **v0.1.6 (16/12/2013)**
 
 
--  Allow package to run with python 3.*
+-  Allow package to run with python 3
 -  README modifications
 
 **v0.1.5 (18/10/2013)**
@@ -182,7 +204,7 @@ Changelog
 License
 -------
 
-Copyright (c) 2013 Michel Nemnom
+Copyright (c) 2015 Michel Nemnom
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
