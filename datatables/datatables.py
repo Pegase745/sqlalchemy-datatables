@@ -84,15 +84,7 @@ class DataTables:
     def __init__(self, request, sqla_object, query, columns):
         """Initializes the object with the attributes needed, and runs the query
         """
-        self.request_values = dict(request.GET)
-
-        for key, value in self.request_values.items():
-            try:
-                self.request_values[key] = int(value)
-            except ValueError:
-                if value in ("true", "false"):
-                    self.request_values[key] = value == "true"
-
+        self.request_values = DataTables.prepare_arguments(request)
         self.sqla_object = sqla_object
         self.query = query
         self.columns = columns
@@ -152,6 +144,19 @@ class DataTables:
             formatted_results.append(row)
 
         self.results = formatted_results
+
+    @classmethod
+    def prepare_arguments(cls, request):
+        request_values = dict()
+        for key, value in request.items():
+            try:
+                request_values[key] = int(value)
+            except ValueError:
+                if value in ("true", "false"):
+                    request_values[key] = value == "true"
+                else: # assume string
+                    request_values[key] = value
+        return request_values
 
     def filtering(self):
         """Construct the query, by adding filtering(LIKE) on all
