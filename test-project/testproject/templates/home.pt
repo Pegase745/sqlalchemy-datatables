@@ -57,9 +57,9 @@
 		});	  
 	  
         var table = $('#simple-example').DataTable({
-          "bProcessing": true,
-          "bServerSide": true,
-          "sAjaxSource": "${request.route_path('simple_example')}"
+          "processing": true,
+          "serverSide": true,
+          "ajax": "${request.route_path('simple_example')}"
         });
 		
 		// Apply the filter

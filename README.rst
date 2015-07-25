@@ -114,9 +114,9 @@ A simple example
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             $('#simple-example').dataTable({
-                "bProcessing": true,
-                "bServerSide": true,
-                "sAjaxSource": "${request.route_path('simple_example')}"
+                "processing": true,
+                "serverSide": true,
+                "ajax": "${request.route_path('simple_example')}"
             });
         });
     </script>

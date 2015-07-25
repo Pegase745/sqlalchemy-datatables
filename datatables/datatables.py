@@ -13,6 +13,8 @@ from logging import getLogger
 
 log = getLogger(__file__)
 
+# DataTables version 1.10+
+
 if sys.version_info > (3, 0):
     unicode = str
 
@@ -102,11 +104,11 @@ class DataTables:
         """Outputs the results in the format needed by DataTables
         """
         output = {}
-        output['sEcho'] = str(int(self.request_values['sEcho']))
-        output['iTotalRecords'] = str(self.cardinality)
-        output['iTotalDisplayRecords'] = str(self.cardinality_filtered)
+        output['draw'] = str(int(self.request_values['draw']))
+        output['recordsTotal'] = str(self.cardinality)
+        output['recordsFiltered'] = str(self.cardinality_filtered)
 
-        output['aaData'] = self.results
+        output['data'] = self.results
 
         return output
 
@@ -162,7 +164,7 @@ class DataTables:
         """Construct the query, by adding filtering(LIKE) on all
         columns when the datatable's search box is used
         """
-        search_value = self.request_values.get('sSearch')
+        search_value = self.request_values.get('search[value]')
         condition = None
 
         def search(idx, col):
@@ -201,7 +203,7 @@ class DataTables:
         if search_value:
             conditions = []
             for idx, col in enumerate(self.columns):
-                if self.request_values.get('bSearchable_%s' % idx) in (
+                if self.request_values.get('columns[%s][searchable]' % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
                     conditions.append(
@@ -209,7 +211,7 @@ class DataTables:
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
-            search_value2 = self.request_values.get('sSearch_%s' % idx)
+            search_value2 = self.request_values.get('columns[%s][search][value]' % idx)
 
             if search_value2 is not None:
 
@@ -242,10 +244,10 @@ class DataTables:
 
         Order = namedtuple('order', ['name', 'dir'])
 
-        if self.request_values.get('iSortingCols') > 0:
-
-            for i in range(int(self.request_values['iSortingCols'])):
-                sorting.append(Order(self.columns[int(self.request_values['iSortCol_' + str(i)])].column_name, self.request_values['sSortDir_' + str(i)]))
+        i = 0
+        while self.request_values.get('order[%s][column]' % i) > 0:
+            sorting.append(Order(self.columns[int(self.request_values['order[%s][column]' % i])].column_name, self.request_values['order[%s][dir]' % i]))
+            i += 1
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
@@ -294,10 +296,10 @@ class DataTables:
         """
         pages = namedtuple('pages', ['start', 'length'])
 
-        if (self.request_values['iDisplayStart'] != "") \
-                and (self.request_values['iDisplayLength'] != -1):
-            pages.start = int(self.request_values['iDisplayStart'])
-            pages.length = int(self.request_values['iDisplayLength'])
+        if (self.request_values['start'] != "") \
+                and (self.request_values['length'] != -1):
+            pages.start = int(self.request_values['start'])
+            pages.length = int(self.request_values['length'])
 
         offset = pages.start + pages.length
         self.query = self.query.slice(pages.start, offset)
