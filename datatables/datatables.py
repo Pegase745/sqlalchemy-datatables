@@ -42,9 +42,9 @@ class ColumnDT(ColumnTuple):
     :param mData: name of the mData property as defined in the
         DataTables javascript options (default None)
     :type mData: str
-    :param search_like: search criteria to like on without
-        forgetting to escape the '%' character
-    :type search_like: str
+    :param search_like: is the search made in the middle of the column value.
+        If not, the column value must equals to the search value (default True)
+    :type search_like: bool
     :param filter: the method needed to be executed on the cell
         values of the column
     as an equivalent of a jinja2 filter (default None)
@@ -55,7 +55,7 @@ class ColumnDT(ColumnTuple):
 
     :returns: a ColumnDT object
     """
-    def __new__(cls, column_name, mData=None, search_like=None,
+    def __new__(cls, column_name, mData=None, search_like=True,
                 filter=str, searchable=True):
         """
         On creation, sets default None values for mData and string value for
