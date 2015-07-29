@@ -92,6 +92,8 @@ class DataTables:
             except ValueError:
                 if value in ("true", "false"):
                     self.request_values[key] = value == "true"
+                elif value == '':
+                    self.request_values[key] = None
 
         self.sqla_object = sqla_object
         self.query = query
