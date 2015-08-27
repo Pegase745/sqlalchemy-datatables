@@ -59,7 +59,7 @@ def simple_example(request):
     query = DBSession.query(User).join(Address).filter(Address.id > 14)
 
     # instantiating a DataTable for the query and table needed
-    rowTable = DataTables(request, User, query, columns)
+    rowTable = DataTables(request.GET, User, query, columns)
 
     # returns what is needed by DataTable
     return rowTable.output_result()
