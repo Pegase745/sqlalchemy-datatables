@@ -7,8 +7,8 @@ python:
   - "pypy"
   - "pypy3"
 install:
-  - pip install . --use-mirrors
-  - pip install -r requirements.txt --use-mirrors
+  - pip install .
+  - pip install -r requirements.txt
   - pip install coveralls
 script:
   coverage run --source=datatables setup.py test
