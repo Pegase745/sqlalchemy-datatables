@@ -1,3 +1,4 @@
+"""Main entry file, definition of ColumnDT and DataTables."""
 import sys
 
 from sqlalchemy.sql.expression import asc, desc
@@ -23,8 +24,7 @@ ColumnTuple = namedtuple(
 
 
 def get_attr(sqla_object, attribute):
-    """Returns the value of an attribute of an SQLAlchemy entity
-    """
+    """Return the value of an attribute of an SQLAlchemy entity."""
     output = sqla_object
     for x in attribute.split('.'):
         if type(output) is InstrumentedList:
@@ -36,7 +36,7 @@ def get_attr(sqla_object, attribute):
 
 class ColumnDT(ColumnTuple):
 
-    """Class defining a DataTables Column with a ColumnTuple:
+    """Class defining a DataTables Column with a ColumnTuple.
 
     :param column_name: name of the column as defined by the SQLAlchemy model
     :type column_name: str
@@ -56,18 +56,21 @@ class ColumnDT(ColumnTuple):
 
     :returns: a ColumnDT object
     """
+
     def __new__(cls, column_name, mData=None, search_like=True,
                 filter=str, searchable=True):
-        """
+        """Set default values for mData and filter.
+
         On creation, sets default None values for mData and string value for
-        filter (cause: Object representation is not JSON serializable)
+        filter (cause: Object representation is not JSON serializable).
         """
-        return super(ColumnDT, cls).__new__(cls, column_name, mData, search_like, filter, searchable)
+        return super(ColumnDT, cls).__new__(
+            cls, column_name, mData, search_like, filter, searchable)
 
 
 class DataTables:
 
-    """Class defining a DataTables object with:
+    """Class defining a DataTables object.
 
     :param request: request containing the GET values, specified by the
         datatable for filtering, sorting and paging
@@ -83,8 +86,7 @@ class DataTables:
     """
 
     def __init__(self, request, sqla_object, query, columns):
-        """Initializes the object with the attributes needed, and runs the query
-        """
+        """Initialize object and run the query."""
         self.request_values = DataTables.prepare_arguments(request)
         self.sqla_object = sqla_object
         self.query = query
@@ -99,9 +101,22 @@ class DataTables:
 
         self.run()
 
+    @classmethod
+    def prepare_arguments(cls, request):
+        """Prepare DataTables with default arguments."""
+        request_values = dict()
+        for key, value in request.items():
+            try:
+                request_values[key] = int(value)
+            except ValueError:
+                if value in ('true', 'false'):
+                    request_values[key] = value == 'true'
+                else:  # assume string
+                    request_values[key] = value
+        return request_values
+
     def output_result(self):
-        """Outputs the results in the format needed by DataTables
-        """
+        """Output results in the format needed by DataTables."""
         output = {}
         output['draw'] = str(int(self.request_values['draw']))
         output['recordsTotal'] = str(self.cardinality)
@@ -112,8 +127,7 @@ class DataTables:
         return output
 
     def run(self):
-        """Launch filtering, sorting and paging processes to output results
-        """
+        """Launch filtering, sorting and paging to output results."""
         # count before filtering
         self.cardinality = self.query.count()
 
@@ -146,29 +160,17 @@ class DataTables:
 
         self.results = formatted_results
 
-    @classmethod
-    def prepare_arguments(cls, request):
-        request_values = dict()
-        for key, value in request.items():
-            try:
-                request_values[key] = int(value)
-            except ValueError:
-                if value in ("true", "false"):
-                    request_values[key] = value == "true"
-                else: # assume string
-                    request_values[key] = value
-        return request_values
-
     def filtering(self):
-        """Construct the query, by adding filtering(LIKE) on all
-        columns when the datatable's search box is used
+        """Construct the query: filtering.
+
+        Add filtering(LIKE) on all columns when the datatable's search
+        box is used.
         """
         search_value = self.request_values.get('search[value]')
         condition = None
 
         def search(idx, col):
-            # TODO: fix for @hybrid properties that reference json or similar
-            # columns.
+            # FIXME: @hybrid properties that reference json or similar columns
             tmp_column_name = col.column_name.split('.')
             for tmp_name in tmp_column_name:
                 # This handles the x.y.z.a option
@@ -202,26 +204,30 @@ class DataTables:
         if search_value:
             conditions = []
             for idx, col in enumerate(self.columns):
-                if self.request_values.get('columns[%s][searchable]' % idx) in (
+                if self.request_values.get(
+                    'columns[%s][searchable]' % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
-                    conditions.append(
-                        cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value))
+                    conditions.append(cast(
+                        get_attr(sqla_obj, column_name), String)
+                        .ilike('%%%s%%' % search_value))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
-            search_value2 = self.request_values.get('columns[%s][search][value]' % idx)
+            search_value2 = self.request_values.get(
+                'columns[%s][search][value]' % idx)
 
             if search_value2 is not None:
-
                 sqla_obj, column_name = search(idx, col)
 
                 if col.search_like:
-                    conditions.append(
-                        cast(get_attr(sqla_obj, column_name), String).ilike('%%%s%%' % search_value2))
+                    conditions.append(cast(
+                        get_attr(sqla_obj, column_name), String)
+                        .ilike('%%%s%%' % search_value2))
                 else:
-                    conditions.append(
-                        cast(get_attr(sqla_obj, column_name), String).__eq__(search_value2))
+                    conditions.append(cast(
+                        get_attr(sqla_obj, column_name), String)
+                        .__eq__(search_value2))
 
                 if condition is not None:
                     condition = and_(condition, and_(*conditions))
@@ -236,8 +242,9 @@ class DataTables:
             self.cardinality_filtered = self.cardinality
 
     def sorting(self):
-        """Construct the query, by adding sorting(ORDER BY) on the
-        columns needed to be applied on
+        """Construct the query: sorting.
+
+        Add sorting(ORDER BY) on the columns needed to be applied on.
         """
         sorting = []
 
@@ -245,7 +252,11 @@ class DataTables:
 
         i = 0
         while self.request_values.get('order[%s][column]' % i) > 0:
-            sorting.append(Order(self.columns[int(self.request_values['order[%s][column]' % i])].column_name, self.request_values['order[%s][dir]' % i]))
+            sorting.append(
+                Order(self.columns[int(
+                      self.request_values['order[%s][column]' % i])]
+                      .column_name,
+                      self.request_values['order[%s][dir]' % i]))
             i += 1
 
         for sort in sorting:
@@ -261,9 +272,9 @@ class DataTables:
                     parent = obj.property.mapper.class_
                     obj = getattr(parent, tmp_name)
 
-                if not hasattr(obj, "property"):  # hybrid_property or property
+                if not hasattr(obj, 'property'):  # hybrid_property or property
                     sort_name = tmp_name
-                    if hasattr(parent, "__tablename__"):
+                    if hasattr(parent, '__tablename__'):
                         tablename = parent.__tablename__
                     else:
                         tablename = parent.__table__.name
@@ -280,22 +291,24 @@ class DataTables:
                 else:  # -> ColumnProperty
                     sort_name = tmp_name
 
-                    if hasattr(parent, "__tablename__"):
+                    if hasattr(parent, '__tablename__'):
                         tablename = parent.__tablename__
                     else:
                         tablename = parent.__table__.name
 
-            sort_name = "%s.%s" % (tablename, sort_name)
+            sort_name = '%s.%s' % (tablename, sort_name)
             self.query = self.query.order_by(
                 asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
 
     def paging(self):
-        """Construct the query, by slicing the results in order to
-        limit rows showed on the page, and paginate the rest
+        """Construct the query: paging.
+
+        Slice the results in order to limit rows showed on the page, and
+        paginate the rest.
         """
         pages = namedtuple('pages', ['start', 'length'])
 
-        if (self.request_values['start'] != "") \
+        if (self.request_values['start'] != '') \
                 and (self.request_values['length'] != -1):
             pages.start = int(self.request_values['start'])
             pages.length = int(self.request_values['length'])
