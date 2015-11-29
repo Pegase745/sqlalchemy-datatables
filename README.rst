@@ -4,7 +4,7 @@
 
 sqlalchemy-datatables is a library providing an SQLALchemy integration of jQuery DataTables. It helps you manage server side requests in your application.
 
-It is framework agnostic, tested with `Pyramid <http://>`_, `Flask <http://>`_ and `Django <http://>`_ mainly.
+It is framework agnostic, tested with `Pyramid <http://>`_ and `Flask <http://>`_ mainly.
 
 It only depends on `SQLAlchemy <http://>`_.
 

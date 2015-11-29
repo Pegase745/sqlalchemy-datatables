@@ -13,8 +13,6 @@ from logging import getLogger
 
 log = getLogger(__file__)
 
-# DataTables version 1.10+
-
 if sys.version_info > (3, 0):
     unicode = str
 
@@ -87,7 +85,8 @@ class DataTables:
 
     def __init__(self, request, sqla_object, query, columns):
         """Initialize object and run the query."""
-        self.request_values = DataTables.prepare_arguments(request)
+        self.request_values, self.legacy = DataTables.prepare_arguments(
+            request)
         self.sqla_object = sqla_object
         self.query = query
         self.columns = columns
@@ -105,6 +104,7 @@ class DataTables:
     def prepare_arguments(cls, request):
         """Prepare DataTables with default arguments."""
         request_values = dict()
+        legacy = False
         for key, value in request.items():
             try:
                 request_values[key] = int(value)
@@ -113,16 +113,33 @@ class DataTables:
                     request_values[key] = value == 'true'
                 else:  # assume string
                     request_values[key] = value
-        return request_values
+
+        # check if DT is older than 1.10.x
+        if request_values.get('sEcho'):
+            legacy = True
+
+        return request_values, legacy
 
     def output_result(self):
         """Output results in the format needed by DataTables."""
         output = {}
-        output['draw'] = str(int(self.request_values['draw']))
-        output['recordsTotal'] = str(self.cardinality)
-        output['recordsFiltered'] = str(self.cardinality_filtered)
 
-        output['data'] = self.results
+        if self.legacy:
+            echo = 'sEcho'
+            totalRecords = 'iTotalRecords'
+            totalDisplayRecords = 'iTotalDisplayRecords'
+            data = 'aaData'
+        else:
+            echo = 'draw'
+            totalRecords = 'recordsTotal'
+            totalDisplayRecords = 'recordsFiltered'
+            data = 'data'
+
+        output[echo] = str(int(self.request_values[echo]))
+        output[totalRecords] = str(self.cardinality)
+        output[totalDisplayRecords] = str(self.cardinality_filtered)
+
+        output[data] = self.results
 
         return output
 
@@ -166,7 +183,15 @@ class DataTables:
         Add filtering(LIKE) on all columns when the datatable's search
         box is used.
         """
-        search_value = self.request_values.get('search[value]')
+        if self.legacy:
+            searchValue = self.request_values.get('sSearch')
+            searchableColumn = 'bSearchable_%s'
+            searchableColumnValue = 'sSearch_%s'
+        else:
+            searchValue = self.request_values.get('search[value]')
+            searchableColumn = 'columns[%s][searchable]'
+            searchableColumnValue = 'columns[%s][search][value]'
+
         condition = None
 
         def search(idx, col):
@@ -201,21 +226,21 @@ class DataTables:
                     column_name = tmp_name
             return sqla_obj, column_name
 
-        if search_value:
+        if searchValue:
             conditions = []
+
             for idx, col in enumerate(self.columns):
-                if self.request_values.get(
-                    'columns[%s][searchable]' % idx) in (
+                if self.request_values.get(searchableColumn % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
                     conditions.append(cast(
                         get_attr(sqla_obj, column_name), String)
-                        .ilike('%%%s%%' % search_value))
+                        .ilike('%%%s%%' % searchValue))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
             search_value2 = self.request_values.get(
-                'columns[%s][search][value]' % idx)
+                searchableColumnValue % idx)
 
             if search_value2 is not None:
                 sqla_obj, column_name = search(idx, col)
@@ -250,13 +275,20 @@ class DataTables:
 
         Order = namedtuple('order', ['name', 'dir'])
 
+        if self.legacy:
+            columnOrder = 'iSortCol_%s'
+            dirOrder = 'sSortDir_%s'
+        else:
+            columnOrder = 'order[%s][column]'
+            dirOrder = 'order[%s][dir]'
+
         i = 0
-        while self.request_values.get('order[%s][column]' % i) > 0:
+        while self.request_values.get(columnOrder % i) > 0:
             sorting.append(
                 Order(self.columns[int(
-                      self.request_values['order[%s][column]' % i])]
+                      self.request_values[columnOrder % i])]
                       .column_name,
-                      self.request_values['order[%s][dir]' % i]))
+                      self.request_values[dirOrder % i]))
             i += 1
 
         for sort in sorting:
@@ -308,10 +340,17 @@ class DataTables:
         """
         pages = namedtuple('pages', ['start', 'length'])
 
-        if (self.request_values['start'] != '') \
-                and (self.request_values['length'] != -1):
-            pages.start = int(self.request_values['start'])
-            pages.length = int(self.request_values['length'])
+        if self.legacy:
+            displayStart = 'iDisplayStart'
+            displayLength = 'iDisplayLength'
+        else:
+            displayStart = 'start'
+            displayLength = 'length'
+
+        if (self.request_values[displayStart] != '') \
+                and (self.request_values[displayLength] != -1):
+            pages.start = int(self.request_values[displayStart])
+            pages.length = int(self.request_values[displayLength])
 
         offset = pages.start + pages.length
         self.query = self.query.slice(pages.start, offset)
