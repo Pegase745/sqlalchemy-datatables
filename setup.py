@@ -1,19 +1,8 @@
-#!/usr/bin/env python
-import sys
-
-from setuptools import setup, find_packages
-
-if sys.version_info >= (3, 0):
-    def my_open(path, mode):
-        return open(path, mode, newline='')
-else:
-    def my_open(path, mode):
-        return open(path, mode + 'b')
+"""App configuration."""
+from setuptools import setup
 
 
-__VERSION__ = [line for line in my_open('datatables/__init__.py', 'r')
-               if line.startswith('__VERSION__')][0].split(
-    '=')[1].strip().lstrip('\'').rstrip('\'')
+__VERSION__ = '0.1.7'
 
 
 setup(
@@ -22,11 +11,11 @@ setup(
     description='SQLAlchemy integration of jQuery DataTables',
     long_description=open('README.rst').read(),
     license='MIT',
-    keywords='sqlalchemy datatables jquery pyramid',
+    keywords='sqlalchemy datatables jquery pyramid flask',
     author='Michel Nemnom',
     author_email='michel.nemnom+pypi@gmail.com',
     url='https://github.com/pegase745/sqlalchemy-datatables',
-    packages=find_packages(exclude=['test_app']),
+    packages=['datatables'],
     include_package_data=True,
     zip_safe=False,
     install_requires=['sqlalchemy'],
@@ -46,9 +35,8 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',

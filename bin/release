@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if ! [ -x "$(command -v bumpversion)" ]; then
+  echo 'bumpversion is not installed.' >&2
+  echo '>> sudo pip install bumpversion' >&2
+  exit 1
+fi
+
+display_usage() {
+  echo -e "\nUsage:\n$0 [major|minor|patch] \n"
+  exit 0
+}
+
+# if no arguments supplied, display usage
+if [ $# -eq 0 ]
+  then
+    echo "No arguments supplied"
+    display_usage
+    exit 1
+fi
+
+# check if the user had supplied [major|minor|patch], otherwise display usage
+if ! [[ "$@" == "major" || "$@" == "minor" || "$@" == "patch" ]]
+then
+  echo "Not a valid part"
+  display_usage
+  exit 1
+fi
+
+bumpversion --allow-dirty --commit --no-tag $1
