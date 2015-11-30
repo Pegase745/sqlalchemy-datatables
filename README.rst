@@ -2,11 +2,11 @@
 `sqlalchemy-datatables <http://sqlalchemy-datatables.rtfd.org/>`_
 =================================================================
 
-sqlalchemy-datatables is a library providing an SQLALchemy integration of jQuery DataTables. It helps you manage server side requests in your application.
+sqlalchemy-datatables is a library providing an `SQLAlchemy <http://www.sqlalchemy.org/>`_ integration of jQuery `DataTables <http://datatables.net/>`_. It helps you manage server side requests in your application.
 
-It is framework agnostic, tested with `Pyramid <http://>`_ and `Flask <http://>`_ mainly.
+It is framework agnostic, tested with `Pyramid <http://www.pylonsproject.org/>`_ and `Flask <http://flask.pocoo.org/>`_ mainly.
 
-It only depends on `SQLAlchemy <http://>`_.
+It only depends on SQLAlchemy, and is compatible with versions **1.9.x** and **1.10.x** of DataTables.
 
 |Build Status| |PyPi Version| |PyPi Downloads| |Code Quality| |Coveralls|
 
@@ -38,7 +38,31 @@ To install the stable version:
 Usage
 -----
 
-Coming soon
+**views.py**
+
+.. code-block:: python
+
+    @view_config(route_name='data', renderer='json')
+    def data(request):
+        """Return server side data."""
+        # defining columns
+        columns = []
+        columns.append(ColumnDT('id'))
+        columns.append(ColumnDT('name', filter=upper))
+        columns.append(ColumnDT('address.description'))
+        columns.append(ColumnDT('created_at'))
+
+        # defining the initial query depending on your purpose
+        query = DBSession.query(User).join(Address).filter(Address.id > 14)
+
+        # instantiating a DataTable for the query and table needed
+        rowTable = DataTables(request.GET, User, query, columns)
+
+        # returns what is needed by DataTable
+        return rowTable.output_result()
+
+
+You can find detailed working examples for Pyramid and Flask in the repository.
 
 Documentation
 -------------
