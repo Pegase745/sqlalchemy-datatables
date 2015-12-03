@@ -11,7 +11,7 @@ setup(
     description='SQLAlchemy integration of jQuery DataTables',
     long_description=open('README.rst').read(),
     license='MIT',
-    keywords='sqlalchemy datatables jquery pyramid flask',
+    keywords='sqlalchemy datatables jquery pyramid flask dt1.9 dt1.10',
     author='Michel Nemnom',
     author_email='michel.nemnom+pypi@gmail.com',
     url='https://github.com/pegase745/sqlalchemy-datatables',
@@ -20,7 +20,7 @@ setup(
     zip_safe=False,
     install_requires=['sqlalchemy'],
     py_modules=['datatables'],
-    test_suite="datatables",
+    test_suite='tests',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

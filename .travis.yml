@@ -8,7 +8,7 @@ python:
   - "pypy3"
 install:
   - pip install .
-  - pip install -r requirements.txt
+  - pip install faker
   - pip install coveralls
 script:
   coverage run --source=datatables setup.py test
