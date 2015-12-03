@@ -84,6 +84,9 @@ class DataTablesTest(unittest.TestCase):
             params['%s%s' % (cols, '[search][value]')] = ''
             params['%s%s' % (cols, '[search][regex]')] = 'false'
 
+        params['order[0][column]'] = '0'
+        params['order[0][dir]'] = 'asc'
+
         return params
 
     def create_dt_legacy_params(self, search='', start=0, length=10):

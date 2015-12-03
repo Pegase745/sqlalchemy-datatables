@@ -9,6 +9,7 @@ python:
   - "pypy3"
 install:
   - pip install -U pip
+  - pip install -U setuptools
   - pip install .
   - pip install fake-factory
   - pip install coveralls
