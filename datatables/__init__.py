@@ -283,13 +283,12 @@ class DataTables:
             dirOrder = 'order[%s][dir]'
 
         i = 0
-        while self.request_values.get(columnOrder % i) > 0:
+        if self.request_values.get(columnOrder % i):
             sorting.append(
                 Order(self.columns[int(
                       self.request_values[columnOrder % i])]
                       .column_name,
                       self.request_values[dirOrder % i]))
-            i += 1
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')

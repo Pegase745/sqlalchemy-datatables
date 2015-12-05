@@ -58,6 +58,7 @@ class DataTablesTest(unittest.TestCase):
         return user, addr
 
     def create_columns(self, columns):
+        """Create a fake DataTables columns."""
         cols = []
 
         for col in columns:
@@ -65,7 +66,7 @@ class DataTablesTest(unittest.TestCase):
 
         return cols
 
-    def create_dt_params(self, search='', start=0, length=10):
+    def create_dt_params(self, search='', start=0, length=10, order=None):
         """Create DataTables input parameters."""
         params = {
             'draw': '1',
@@ -84,12 +85,14 @@ class DataTablesTest(unittest.TestCase):
             params['%s%s' % (cols, '[search][value]')] = ''
             params['%s%s' % (cols, '[search][regex]')] = 'false'
 
-        params['order[0][column]'] = '0'
-        params['order[0][dir]'] = 'asc'
+        for i, item in enumerate(order or [{'column': 0, 'dir': 'asc'}]):
+            for key, value in item.items():
+                params['order[%s][%s]' % (i, key)] = str(value)
 
         return params
 
-    def create_dt_legacy_params(self, search='', start=0, length=10):
+    def create_dt_legacy_params(self, search='', start=0, length=10,
+                                order=None):
         """Create DataTables input parameters."""
         params = {
             'sEcho': '1',
@@ -107,10 +110,15 @@ class DataTablesTest(unittest.TestCase):
             params['bSearchable_%s' % i] = 'true'
             params['bSortable_%s' % i] = 'true'
 
+        for i, item in enumerate(order or [{'column': 0, 'dir': 'asc'}]):
+            for key, value in item.items():
+                if key == 'column':
+                    params['iSortCol_%s' % i] = str(value)
+                if key == 'dir':
+                    params['sSortDir_%s' % i] = str(value)
+
         params['iColumns'] = '4'
         params['sColumns'] = ''
-        params['iSortCol_0'] = '0'
-        params['sSortDir_0'] = 'asc'
 
         return params
 
@@ -310,3 +318,72 @@ class DataTablesTest(unittest.TestCase):
         assert len(res['aaData']) == 0
         assert res['iTotalRecords'] == '7'
         assert res['iTotalDisplayRecords'] == '0'
+
+    def test_column_ordering(self):
+        """Test if a column is orderable."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('0_aaa', 'Whatever')
+        user7, addr7 = self.create_user('zzz_aaa', 'Whatif')
+
+        self.session.add(user6)
+        self.session.add(user7)
+        self.session.commit()
+
+        columns = self.create_columns(['id', 'name', 'address.description',
+                                       'created_at'])
+
+        # DESC
+        req = self.create_dt_params(order=[{"column": 1, "dir": "desc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['data'][0]['1'] == 'zzz_aaa'
+
+        # ASC
+        req = self.create_dt_params(order=[{"column": 1, "dir": "asc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['data'][0]['1'] == '0_aaa'
+
+    def test_column_ordering_legacy(self):
+        """Test if a column is orderable (legacy)."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('0_aaa', 'Whatever')
+        user7, addr7 = self.create_user('zzz_aaa', 'Whatif')
+
+        self.session.add(user6)
+        self.session.add(user7)
+        self.session.commit()
+
+        columns = self.create_columns(['id', 'name', 'address.description',
+                                       'created_at'])
+
+        # DESC
+        req = self.create_dt_legacy_params(
+            order=[{"column": 1, "dir": "desc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['aaData'][0]['1'] == 'zzz_aaa'
+
+        # ASC
+        req = self.create_dt_legacy_params(order=[{"column": 1, "dir": "asc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['aaData'][0]['1'] == '0_aaa'
