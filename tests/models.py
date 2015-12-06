@@ -4,6 +4,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.hybrid import hybrid_property
 
 Base = declarative_base()
 
@@ -26,6 +27,14 @@ class User(Base):
     def __repr__(self):
         """Give a unambiguous representation of an instance."""
         return '<%s#%s>' % (self.__class__.__name__, self.id)
+
+    @hybrid_property
+    def dummy(self):
+        return '%s%s-DUMMY' % (self.name[0:1], str(self.id))
+
+    @dummy.expression
+    def dummy(cls):
+        return True
 
 
 class Address(Base):

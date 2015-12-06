@@ -2,7 +2,7 @@
 import sys
 
 from sqlalchemy.sql.expression import asc, desc
-from sqlalchemy.sql import or_, and_
+from sqlalchemy.sql import or_, and_, text
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.expression import cast
@@ -329,7 +329,8 @@ class DataTables:
 
             sort_name = '%s.%s' % (tablename, sort_name)
             self.query = self.query.order_by(
-                asc(sort_name) if sort.dir == 'asc' else desc(sort_name))
+                asc(text(sort_name)) if sort.dir == 'asc' else desc(
+                    text(sort_name)))
 
     def paging(self):
         """Construct the query: paging.
