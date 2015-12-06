@@ -1,3 +1,6 @@
-include *.txt
+include *.in
+include .bumpversion.cfg
 include LICENSE
-prune test-project
+recursive-include tests *.py
+prune bin
+prune examples
