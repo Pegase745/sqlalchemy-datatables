@@ -283,7 +283,7 @@ class DataTables:
             dirOrder = 'order[%s][dir]'
 
         i = 0
-        if self.request_values.get(columnOrder % i):
+        if self.request_values.get(columnOrder % i) is not None:
             sorting.append(
                 Order(self.columns[int(
                       self.request_values[columnOrder % i])]
