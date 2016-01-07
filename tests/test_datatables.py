@@ -218,6 +218,29 @@ class DataTablesTest(unittest.TestCase):
         assert res['recordsTotal'] == '7'
         assert res['recordsFiltered'] == '0'
 
+    def test_null_field_filtering(self):
+        """Test if a None field is not filtered."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('Empty', None)
+
+        self.session.add(user6)
+        self.session.commit()
+
+        columns = self.create_columns(['id', 'name', 'address.description',
+                                       'created_at'])
+        
+        req = self.create_dt_params()
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert len(res['data']) == 6
+        assert res['recordsTotal'] == '6'
+        assert res['recordsFiltered'] == '6'
+        
     def test_column_ordering(self):
         """Test if a column is orderable."""
         self.populate(5)
