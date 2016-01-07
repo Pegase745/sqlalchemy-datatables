@@ -252,6 +252,16 @@ class DataTablesTest(unittest.TestCase):
 
         assert res['data'][0]['1'] == '000_aaa'
 
+        # DESC first column
+        req = self.create_dt_params(order=[{"column": 0, "dir": "desc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['data'][0]['1'] == 'zzz_aaa'
+        
     def test_column_ordering_relation(self):
         """Test if a foreign key column is orderable."""
         self.populate(5)
