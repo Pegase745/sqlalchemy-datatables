@@ -242,7 +242,7 @@ class DataTables:
             search_value2 = self.request_values.get(
                 searchableColumnValue % idx)
 
-            if search_value2 is not None:
+            if search_value2:
                 sqla_obj, column_name = search(idx, col)
 
                 if col.search_like:
@@ -283,7 +283,7 @@ class DataTables:
             dirOrder = 'order[%s][dir]'
 
         i = 0
-        if self.request_values.get(columnOrder % i):
+        if self.request_values.get(columnOrder % i) is not None:
             sorting.append(
                 Order(self.columns[int(
                       self.request_values[columnOrder % i])]
