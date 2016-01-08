@@ -229,7 +229,7 @@ class DataTablesTest(unittest.TestCase):
 
         columns = self.create_columns(['id', 'name', 'address.description',
                                        'created_at'])
-        
+
         req = self.create_dt_params()
 
         rowTable = DataTables(
@@ -240,7 +240,7 @@ class DataTablesTest(unittest.TestCase):
         assert len(res['data']) == 6
         assert res['recordsTotal'] == '6'
         assert res['recordsFiltered'] == '6'
-        
+
     def test_column_ordering(self):
         """Test if a column is orderable."""
         self.populate(5)
@@ -284,7 +284,7 @@ class DataTablesTest(unittest.TestCase):
         res = rowTable.output_result()
 
         assert res['data'][0]['1'] == 'zzz_aaa'
-        
+
     def test_column_ordering_relation(self):
         """Test if a foreign key column is orderable."""
         self.populate(5)

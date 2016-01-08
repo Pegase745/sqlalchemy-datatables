@@ -223,6 +223,29 @@ class DataTablesLegacyTest(unittest.TestCase):
         assert res['iTotalRecords'] == '7'
         assert res['iTotalDisplayRecords'] == '0'
 
+    def test_null_field_filtering(self):
+        """Test if a None field is not filtered."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('Empty', None)
+
+        self.session.add(user6)
+        self.session.commit()
+
+        columns = self.create_columns(['id', 'name', 'address.description',
+                                       'created_at'])
+
+        req = self.create_dt_params()
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert len(res['aaData']) == 6
+        assert res['iTotalRecords'] == '6'
+        assert res['iTotalDisplayRecords'] == '6'
+
     def test_column_ordering(self):
         """Test if a column is orderable."""
         self.populate(5)
@@ -257,6 +280,17 @@ class DataTablesLegacyTest(unittest.TestCase):
         res = rowTable.output_result()
 
         assert res['aaData'][0]['1'] == '000_aaa'
+
+        # DESC first column
+        req = self.create_dt_params(
+            order=[{"column": 0, "dir": "desc"}])
+
+        rowTable = DataTables(
+            req, User, self.session.query(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        assert res['aaData'][0]['1'] == 'zzz_aaa'
 
     def test_column_ordering_relation(self):
         """Test if a foreign key column is orderable."""
