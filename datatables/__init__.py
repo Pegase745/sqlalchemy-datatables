@@ -18,6 +18,11 @@ if sys.version_info > (3, 0):
 
 class invalidParameter(Exception): pass
 
+REGEX_OP = {
+    'mysql': 'regexp',
+    'postgresql': '~',
+}
+
 ColumnTuple = namedtuple(
     'ColumnDT',
     ['column_name', 'mData', 'search_like', 'filter', 'searchable', 'filterarg'])
@@ -87,7 +92,7 @@ class DataTables:
     :returns: a DataTables object
     """
 
-    def __init__(self, request, sqla_object, query, columns):
+    def __init__(self, request, sqla_object, query, columns, dialect=None):
         """Initialize object and run the query."""
         self.request_values, self.legacy = DataTables.prepare_arguments(
             request)
@@ -95,6 +100,7 @@ class DataTables:
         self.query = query
         self.columns = columns
         self.results = None
+        self.dialect = dialect
 
         # total in the table after filtering
         self.cardinality_filtered = 0
@@ -195,13 +201,18 @@ class DataTables:
         box is used.
         """
         if self.legacy:
+            # see http://legacy.datatables.net/usage/server-side
             searchValue = self.request_values.get('sSearch')
+            searchRegex = self.request_values.get('bRegex')
             searchableColumn = 'bSearchable_%s'
             searchableColumnValue = 'sSearch_%s'
+            searchableColumnRegex = 'bRegex_%s'
         else:
             searchValue = self.request_values.get('search[value]')
+            searchRegex = self.request_values.get('search[regex]')
             searchableColumn = 'columns[%s][searchable]'
             searchableColumnValue = 'columns[%s][search][value]'
+            searchableColumnRegex = 'columns[%s][search][regex]'
 
         condition = None
 
@@ -244,9 +255,21 @@ class DataTables:
                 if self.request_values.get(searchableColumn % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
-                    conditions.append(cast(
-                        get_attr(sqla_obj, column_name), String)
-                        .ilike('%%%s%%' % searchValue))
+                    # ignore regex possibilty for now because when user types "blah" in search bar it's ok, 
+                    # but as soon as OR bar "|" is typed, mysql raises exception
+                    # see http://datatables.net/forums/discussion/33699/search-regex-sub-expression-error
+                    # regex takes precedence
+                    # if (searchRegex in ( True, 'true') and self.dialect in REGEX_OP):
+                    if False:
+                        conditions.append(cast(
+                            get_attr(sqla_obj, column_name), String)
+                            .op(REGEX_OP[self.dialect])(searchValue))
+                    # use like
+                    else:
+                        print 'col {} like {}'.format(idx, searchValue)
+                        conditions.append(cast(
+                            get_attr(sqla_obj, column_name), String)
+                            .ilike('%%%s%%' % searchValue))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
@@ -256,7 +279,14 @@ class DataTables:
             if search_value2:
                 sqla_obj, column_name = search(idx, col)
 
-                if col.search_like:
+                # regex takes precedence over search_like
+                if (self.request_values.get(searchableColumnRegex % idx) 
+                            in ( True, 'true') and
+                            self.dialect in REGEX_OP):
+                    conditions.append(cast(
+                        get_attr(sqla_obj, column_name), String)
+                        .op(REGEX_OP[self.dialect])(search_value2))
+                elif col.search_like:
                     conditions.append(cast(
                         get_attr(sqla_obj, column_name), String)
                         .ilike('%%%s%%' % search_value2))
