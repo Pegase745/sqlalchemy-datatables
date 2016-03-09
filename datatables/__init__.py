@@ -175,7 +175,7 @@ class DataTables:
                         tmp_row = get_attr(self.results[i], col.column_name)
                         if sys.version_info < (3, 0) \
                                 and hasattr(tmp_row, 'encode'):
-                            tmp_row = col.filter(tmp_row.encode('utf-8'))
+                            tmp_row = tmp_row.encode('utf-8')
                         tmp_row = col.filter(tmp_row)
                     elif col.filterarg == 'row':
                         tmp_row = col.filter(self.results[i])
