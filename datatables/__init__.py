@@ -170,7 +170,7 @@ class DataTables:
                 if col.filter:
                     if sys.version_info < (3, 0) \
                             and hasattr(tmp_row, 'encode'):
-                        tmp_row = col.filter(tmp_row.encode('utf-8'))
+                        tmp_row = tmp_row.encode('utf-8')
                     tmp_row = col.filter(tmp_row)
                 row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
