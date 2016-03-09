@@ -186,7 +186,7 @@ class DataTables:
                     elif col.filterarg == 'row':
                         tmp_row = col.filter(self.results[i])
                     else:
-                        raise invalidParameter, "invalid filterarg {} for column_name {}: filterarg must be 'row' or 'cell'".format(col.filterarg, col.column_name)
+                        raise invalidParameter("invalid filterarg %s for column_name %s: filterarg must be 'row' or 'cell'" % col.filterarg, col.column_name)
                 else:
                     tmp_row = get_attr(self.results[i], col.column_name)
                 row[col.mData if col.mData else str(j)] = tmp_row
