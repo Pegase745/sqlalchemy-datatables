@@ -266,7 +266,6 @@ class DataTables:
                             .op(REGEX_OP[self.dialect])(searchValue))
                     # use like
                     else:
-                        print 'col {} like {}'.format(idx, searchValue)
                         conditions.append(cast(
                             get_attr(sqla_obj, column_name), String)
                             .ilike('%%%s%%' % searchValue))
