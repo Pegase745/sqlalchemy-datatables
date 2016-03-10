@@ -16,11 +16,10 @@ log = getLogger(__file__)
 if sys.version_info > (3, 0):
     unicode = str
 
-class invalidParameter(Exception): pass
-
 ColumnTuple = namedtuple(
     'ColumnDT',
-    ['column_name', 'mData', 'search_like', 'filter', 'searchable', 'filterarg'])
+    ['column_name', 'mData', 'search_like', 'filter', 'searchable',
+        'filterarg'])
 
 
 def get_attr(sqla_object, attribute):
@@ -32,6 +31,13 @@ def get_attr(sqla_object, attribute):
         else:
             output = getattr(output, x)
     return output
+
+
+class InvalidParameter(Exception):
+
+    """Class defining an invalid parameter exception."""
+
+    pass
 
 
 class ColumnDT(ColumnTuple):
@@ -67,7 +73,8 @@ class ColumnDT(ColumnTuple):
         filter (cause: Object representation is not JSON serializable).
         """
         return super(ColumnDT, cls).__new__(
-            cls, column_name, mData, search_like, filter, searchable, filterarg)
+            cls, column_name, mData, search_like, filter, searchable,
+            filterarg)
 
 
 class DataTables:
@@ -180,7 +187,10 @@ class DataTables:
                     elif col.filterarg == 'row':
                         tmp_row = col.filter(self.results[i])
                     else:
-                        raise invalidParameter("invalid filterarg %s for column_name %s: filterarg must be 'row' or 'cell'" % col.filterarg, col.column_name)
+                        raise InvalidParameter(
+                            "invalid filterarg %s for \ column_name %s: \
+                                filterarg must be 'row' or 'cell'"
+                            % col.filterarg, col.column_name)
                 else:
                     tmp_row = get_attr(self.results[i], col.column_name)
                 row[col.mData if col.mData else str(j)] = tmp_row
