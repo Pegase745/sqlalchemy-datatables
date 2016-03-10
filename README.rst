@@ -74,7 +74,7 @@ Changelog
 
 All notable changes to this project will be documented in `this section <CHANGELOG.rst>`_.
 
-*This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A Changelog <http://keepachangelog.com/>`_.*
+This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A Changelog <http://keepachangelog.com/>`_.
 
 License
 -------
