@@ -72,8 +72,9 @@ The latest documentation is available online on `Read the Docs <http://sqlalchem
 Changelog
 ---------
 
-This project adheres to `Semantic Versioning <http://semver.org/>`_.
-Every release, is documented on the Github `releases <https://github.com/Pegase745/sqlalchemy-datatables/releases>`_ page.
+All notable changes to this project will be documented in `this section <CHANGELOG.rst>`_.
+
+*This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A Changelog <http://keepachangelog.com/>`_.*
 
 License
 -------
