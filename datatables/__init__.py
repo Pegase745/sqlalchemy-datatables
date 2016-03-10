@@ -16,9 +16,11 @@ log = getLogger(__file__)
 if sys.version_info > (3, 0):
     unicode = str
 
+class invalidParameter(Exception): pass
+
 ColumnTuple = namedtuple(
     'ColumnDT',
-    ['column_name', 'mData', 'search_like', 'filter', 'searchable'])
+    ['column_name', 'mData', 'search_like', 'filter', 'searchable', 'filterarg'])
 
 
 def get_attr(sqla_object, attribute):
@@ -51,19 +53,21 @@ class ColumnDT(ColumnTuple):
     :param searchable: Enable or disable a column to be searchable
         server-side. (default True)
     :type searchable: bool
+    :param filterarg: type of argument for filter function
+    :type filterarg: string: 'cell' or 'row'. 'cell' is default
 
     :returns: a ColumnDT object
     """
 
     def __new__(cls, column_name, mData=None, search_like=True,
-                filter=str, searchable=True):
+                filter=str, searchable=True, filterarg='cell'):
         """Set default values for mData and filter.
 
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable).
         """
         return super(ColumnDT, cls).__new__(
-            cls, column_name, mData, search_like, filter, searchable)
+            cls, column_name, mData, search_like, filter, searchable, filterarg)
 
 
 class DataTables:
@@ -166,12 +170,19 @@ class DataTables:
             row = dict()
             for j in range(len(self.columns)):
                 col = self.columns[j]
-                tmp_row = get_attr(self.results[i], col.column_name)
                 if col.filter:
-                    if sys.version_info < (3, 0) \
-                            and hasattr(tmp_row, 'encode'):
-                        tmp_row = tmp_row.encode('utf-8')
-                    tmp_row = col.filter(tmp_row)
+                    if col.filterarg == 'cell':
+                        tmp_row = get_attr(self.results[i], col.column_name)
+                        if sys.version_info < (3, 0) \
+                                and hasattr(tmp_row, 'encode'):
+                            tmp_row = tmp_row.encode('utf-8')
+                        tmp_row = col.filter(tmp_row)
+                    elif col.filterarg == 'row':
+                        tmp_row = col.filter(self.results[i])
+                    else:
+                        raise invalidParameter("invalid filterarg %s for column_name %s: filterarg must be 'row' or 'cell'" % col.filterarg, col.column_name)
+                else:
+                    tmp_row = get_attr(self.results[i], col.column_name)
                 row[col.mData if col.mData else str(j)] = tmp_row
             formatted_results.append(row)
 
