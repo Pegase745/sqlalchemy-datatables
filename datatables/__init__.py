@@ -39,6 +39,46 @@ def get_attr(sqla_object, attribute):
     return output
 
 
+def clean_regex(regex):
+    '''
+    escape any regex special characters other than alternation |
+
+    :param regex: regex from datatables interface
+    :type regex: str
+    :rtype: str with regex to use with database
+    '''
+    # copy for return
+    ret_regex = regex
+
+    # these characters are escaped (all except alternation | and escape \)
+    # see http://www.regular-expressions.info/refquick.html
+    escape_chars = '[^$.?*+(){}'
+
+    # remove any escape chars
+    ret_regex = ret_regex.replace('\\','')
+
+    # escape any characters which are used by regex
+    # could probably concoct something incomprehensible using re.sub() but 
+    # prefer to write clear code with this loop
+    # note expectation that no characters have already been escaped
+    for c in escape_chars:
+        ret_regex = ret_regex.replace(c,'\\'+c)
+
+    # remove any double alternations until these don't exist any more
+    while True:
+        old_regex = ret_regex
+        ret_regex = ret_regex.replace('||', '|')
+        if old_regex == ret_regex: break
+
+    # if last char is alternation | remove it because this 
+    # will cause operational error
+    # this can happen as user is typing in global search box
+    while len(ret_regex) >= 1 and ret_regex[-1] == '|':
+        ret_regex = ret_regex[:-1]
+
+    # and back to the caller
+    return ret_regex
+
 class ColumnDT(ColumnTuple):
 
     """Class defining a DataTables Column with a ColumnTuple.
@@ -251,19 +291,21 @@ class DataTables:
         if searchValue:
             conditions = []
 
+            # only need to call this once
+            regex = clean_regex(searchValue)
+
+            # loop through columns looking for global search value
             for idx, col in enumerate(self.columns):
                 if self.request_values.get(searchableColumn % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
-                    # ignore regex possibilty for now because when user types "blah" in search bar it's ok, 
-                    # but as soon as OR bar "|" is typed, mysql raises exception
-                    # see http://datatables.net/forums/discussion/33699/search-regex-sub-expression-error
                     # regex takes precedence
-                    # if (searchRegex in ( True, 'true') and self.dialect in REGEX_OP):
-                    if False:
+                    if (searchRegex in ( True, 'true')
+                            and self.dialect in REGEX_OP
+                            and len(regex) >= 1):
                         conditions.append(cast(
                             get_attr(sqla_obj, column_name), String)
-                            .op(REGEX_OP[self.dialect])(searchValue))
+                            .op(REGEX_OP[self.dialect])(regex))
                     # use like
                     else:
                         conditions.append(cast(
@@ -279,12 +321,14 @@ class DataTables:
                 sqla_obj, column_name = search(idx, col)
 
                 # regex takes precedence over search_like
+                regex = clean_regex(search_value2)
                 if (self.request_values.get(searchableColumnRegex % idx) 
                             in ( True, 'true') and
-                            self.dialect in REGEX_OP):
+                            self.dialect in REGEX_OP and 
+                            len(regex) >= 1):
                     conditions.append(cast(
                         get_attr(sqla_obj, column_name), String)
-                        .op(REGEX_OP[self.dialect])(search_value2))
+                        .op(REGEX_OP[self.dialect])(regex))
                 elif col.search_like:
                     conditions.append(cast(
                         get_attr(sqla_obj, column_name), String)
