@@ -6,8 +6,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 
 Unreleased_
 -----------
+
+0.3.0_ - 2016-04-10
+-------------------
 Added
 ~~~~~
+  - Set nullsfirst or nullslast sorting in compatible databases (`nulls_order` param in ColumnDT).
   - Allow filtering based on row data (`filterarg` param in ColumnDT).
   - Add CHANGELOG.
 
@@ -113,7 +117,8 @@ Added
 ~~~~~
   - Initial version of the lib.
 
-.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.1...master
+.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.3.0...master
+.. _0.3.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.1...v0.3.0
 .. _0.2.1: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.0...v0.2.1
 .. _0.2.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.1.7...v0.2.0
 .. _0.1.7: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.1.6...v0.1.7
