@@ -2,7 +2,7 @@
 from setuptools import setup
 
 
-__VERSION__ = '0.2.2rc2'
+__VERSION__ = '0.3.0'
 
 
 setup(

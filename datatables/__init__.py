@@ -1,7 +1,7 @@
 """Main entry file, definition of ColumnDT and DataTables."""
 import sys
 
-from sqlalchemy.sql.expression import asc, desc
+from sqlalchemy.sql.expression import asc, desc, nullsfirst, nullslast
 from sqlalchemy.sql import or_, and_, text
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
@@ -16,12 +16,10 @@ log = getLogger(__file__)
 if sys.version_info > (3, 0):
     unicode = str
 
-class InvalidParameter(Exception):
-
-    """Class defining an invalid parameter exception."""
-
-    pass
-
+nullsMethods = {
+    'nullsfirst': nullsfirst,
+    'nullslast': nullslast
+}
 
 REGEX_OP = {
     'mysql': 'regexp',
@@ -31,7 +29,7 @@ REGEX_OP = {
 ColumnTuple = namedtuple(
     'ColumnDT',
     ['column_name', 'mData', 'search_like', 'filter', 'searchable',
-        'filterarg'])
+        'filterarg', 'nulls_order'])
 
 
 def get_attr(sqla_object, attribute):
@@ -85,6 +83,13 @@ def clean_regex(regex):
     # and back to the caller
     return ret_regex
 
+class InvalidParameter(Exception):
+
+    """Class defining an invalid parameter exception."""
+
+    pass
+
+
 class ColumnDT(ColumnTuple):
 
     """Class defining a DataTables Column with a ColumnTuple.
@@ -101,25 +106,34 @@ class ColumnDT(ColumnTuple):
         values of the column
     as an equivalent of a jinja2 filter (default None)
     :type filter: a callable object
-    :param searchable: Enable or disable a column to be searchable
+    :param searchable: enable or disable a column to be searchable
         server-side. (default True)
     :type searchable: bool
     :param filterarg: type of argument for filter function
     :type filterarg: string: 'cell' or 'row'. 'cell' is default
+    :param nulls_order: define a sort order for the NULL values. Possible
+        values: nullsfirst, nullslast. (default None)
+    :type nulls_order: str
 
     :returns: a ColumnDT object
     """
 
     def __new__(cls, column_name, mData=None, search_like=True,
-                filter=str, searchable=True, filterarg='cell'):
+                filter=str, searchable=True, filterarg='cell',
+                nulls_order=None):
         """Set default values for mData and filter.
 
         On creation, sets default None values for mData and string value for
         filter (cause: Object representation is not JSON serializable).
         """
+        # check if allowed value
+        if nulls_order and nulls_order not in ['nullsfirst', 'nullslast']:
+            raise ValueError('`%s` is not an allowed value for nulls_order.'
+                             % nulls_order)
+
         return super(ColumnDT, cls).__new__(
             cls, column_name, mData, search_like, filter, searchable,
-            filterarg)
+            filterarg, nulls_order)
 
 
 class DataTables:
@@ -367,7 +381,7 @@ class DataTables:
         """
         sorting = []
 
-        Order = namedtuple('order', ['name', 'dir'])
+        Order = namedtuple('order', ['name', 'dir', 'nullsOrder'])
 
         if self.legacy:
             columnOrder = 'iSortCol_%s'
@@ -379,10 +393,13 @@ class DataTables:
         i = 0
         if self.request_values.get(columnOrder % i) is not None:
             sorting.append(
-                Order(self.columns[int(
-                      self.request_values[columnOrder % i])]
-                      .column_name,
-                      self.request_values[dirOrder % i]))
+                Order(
+                    self.columns[
+                        int(self.request_values[columnOrder % i])].column_name,
+                    self.request_values[dirOrder % i],
+                    self.columns[
+                        int(self.request_values[columnOrder % i])]
+                    .nulls_order))
 
         for sort in sorting:
             tmp_sort_name = sort.name.split('.')
@@ -422,9 +439,14 @@ class DataTables:
                         tablename = parent.__table__.name
 
             sort_name = '%s.%s' % (tablename, sort_name)
-            self.query = self.query.order_by(
-                asc(text(sort_name)) if sort.dir == 'asc' else desc(
-                    text(sort_name)))
+
+            ordering = asc(text(sort_name)) if sort.dir == 'asc' else desc(
+                text(sort_name))
+
+            if sort.nullsOrder:
+                ordering = nullsMethods[sort.nullsOrder](ordering)
+
+            self.query = self.query.order_by(ordering)
 
     def paging(self):
         """Construct the query: paging.
