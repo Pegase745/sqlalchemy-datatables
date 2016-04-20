@@ -318,3 +318,25 @@ class DataTablesTest(unittest.TestCase):
         res = rowTable.output_result()
 
         assert res['data'][0]['2'] == '000_aaa'
+
+    def test_outerjoin(self):
+        """Test if outerjoin works."""
+        self.populate(5)
+        f = faker.Faker()
+        a = Address(description=f.address())
+        self.session.add(a)
+
+        columns = self.create_columns(['id', 'description', 'user.name'])
+
+        req = self.create_dt_params()
+
+        rowTable = DataTables(
+            req, Address, self.session.query(Address).outerjoin(User), columns)
+
+        res = rowTable.output_result()
+
+        assert len(res['data']) == 6
+        assert res['recordsTotal'] == '6'
+        assert res['recordsFiltered'] == '6'
+        assert res['data'][5]['1'] == a.description
+        assert res['data'][5]['2'] == 'None'
