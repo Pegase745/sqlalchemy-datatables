@@ -21,6 +21,11 @@ nullsMethods = {
     'nullslast': nullslast
 }
 
+REGEX_OP = {
+    'mysql': 'regexp',
+    'postgresql': '~',
+}
+
 ColumnTuple = namedtuple(
     'ColumnDT',
     ['column_name', 'mData', 'search_like', 'filter', 'searchable',
@@ -37,6 +42,46 @@ def get_attr(sqla_object, attribute):
             output = getattr(output, x, None)
     return output
 
+
+def clean_regex(regex):
+    '''
+    escape any regex special characters other than alternation |
+
+    :param regex: regex from datatables interface
+    :type regex: str
+    :rtype: str with regex to use with database
+    '''
+    # copy for return
+    ret_regex = regex
+
+    # these characters are escaped (all except alternation | and escape \)
+    # see http://www.regular-expressions.info/refquick.html
+    escape_chars = '[^$.?*+(){}'
+
+    # remove any escape chars
+    ret_regex = ret_regex.replace('\\','')
+
+    # escape any characters which are used by regex
+    # could probably concoct something incomprehensible using re.sub() but 
+    # prefer to write clear code with this loop
+    # note expectation that no characters have already been escaped
+    for c in escape_chars:
+        ret_regex = ret_regex.replace(c,'\\'+c)
+
+    # remove any double alternations until these don't exist any more
+    while True:
+        old_regex = ret_regex
+        ret_regex = ret_regex.replace('||', '|')
+        if old_regex == ret_regex: break
+
+    # if last char is alternation | remove it because this 
+    # will cause operational error
+    # this can happen as user is typing in global search box
+    while len(ret_regex) >= 1 and ret_regex[-1] == '|':
+        ret_regex = ret_regex[:-1]
+
+    # and back to the caller
+    return ret_regex
 
 class InvalidParameter(Exception):
 
@@ -108,7 +153,7 @@ class DataTables:
     :returns: a DataTables object
     """
 
-    def __init__(self, request, sqla_object, query, columns):
+    def __init__(self, request, sqla_object, query, columns, dialect=None):
         """Initialize object and run the query."""
         self.request_values, self.legacy = DataTables.prepare_arguments(
             request)
@@ -116,6 +161,7 @@ class DataTables:
         self.query = query
         self.columns = columns
         self.results = None
+        self.dialect = dialect
 
         # total in the table after filtering
         self.cardinality_filtered = 0
@@ -219,13 +265,18 @@ class DataTables:
         box is used.
         """
         if self.legacy:
+            # see http://legacy.datatables.net/usage/server-side
             searchValue = self.request_values.get('sSearch')
+            searchRegex = self.request_values.get('bRegex')
             searchableColumn = 'bSearchable_%s'
             searchableColumnValue = 'sSearch_%s'
+            searchableColumnRegex = 'bRegex_%s'
         else:
             searchValue = self.request_values.get('search[value]')
+            searchRegex = self.request_values.get('search[regex]')
             searchableColumn = 'columns[%s][searchable]'
             searchableColumnValue = 'columns[%s][search][value]'
+            searchableColumnRegex = 'columns[%s][search][regex]'
 
         condition = None
 
@@ -264,13 +315,26 @@ class DataTables:
         if searchValue:
             conditions = []
 
+            # only need to call this once
+            regex = clean_regex(searchValue)
+
+            # loop through columns looking for global search value
             for idx, col in enumerate(self.columns):
                 if self.request_values.get(searchableColumn % idx) in (
                         True, 'true') and col.searchable:
                     sqla_obj, column_name = search(idx, col)
-                    conditions.append(cast(
-                        get_attr(sqla_obj, column_name), String)
-                        .ilike('%%%s%%' % searchValue))
+                    # regex takes precedence
+                    if (searchRegex in ( True, 'true')
+                            and self.dialect in REGEX_OP
+                            and len(regex) >= 1):
+                        conditions.append(cast(
+                            get_attr(sqla_obj, column_name), String)
+                            .op(REGEX_OP[self.dialect])(regex))
+                    # use like
+                    else:
+                        conditions.append(cast(
+                            get_attr(sqla_obj, column_name), String)
+                            .ilike('%%%s%%' % searchValue))
             condition = or_(*conditions)
         conditions = []
         for idx, col in enumerate(self.columns):
@@ -280,7 +344,16 @@ class DataTables:
             if search_value2:
                 sqla_obj, column_name = search(idx, col)
 
-                if col.search_like:
+                # regex takes precedence over search_like
+                regex = clean_regex(search_value2)
+                if (self.request_values.get(searchableColumnRegex % idx) 
+                            in ( True, 'true') and
+                            self.dialect in REGEX_OP and 
+                            len(regex) >= 1):
+                    conditions.append(cast(
+                        get_attr(sqla_obj, column_name), String)
+                        .op(REGEX_OP[self.dialect])(regex))
+                elif col.search_like:
                     conditions.append(cast(
                         get_attr(sqla_obj, column_name), String)
                         .ilike('%%%s%%' % search_value2))
