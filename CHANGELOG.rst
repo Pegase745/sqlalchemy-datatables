@@ -7,6 +7,16 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 Unreleased_
 -----------
 
+0.4.0_ - 2016-05-05
+-------------------
+Added
+~~~~~
+  - Allow regex from columns to support yadcf multi_select.
+
+Fixed
+~~~~~
+  - Fix error while using outerjoin in the query.
+
 0.3.0_ - 2016-04-10
 -------------------
 Added
@@ -117,7 +127,8 @@ Added
 ~~~~~
   - Initial version of the lib.
 
-.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.3.0...master
+.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.4.0...master
+.. _0.4.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.3.0...v0.4.0
 .. _0.3.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.1...v0.3.0
 .. _0.2.1: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.0...v0.2.1
 .. _0.2.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.1.7...v0.2.0
