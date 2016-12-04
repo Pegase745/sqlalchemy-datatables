@@ -1,6 +1,7 @@
 """Column DataTable unit tests."""
 import unittest
 from datatables import ColumnDT
+from .models import User
 
 
 class ColumnTest(unittest.TestCase):
@@ -9,13 +10,13 @@ class ColumnTest(unittest.TestCase):
 
     def test_with_default_params_ok(self):
         """Return column with given default params."""
-        col = ColumnDT('id')
+        col = ColumnDT(User.id)
 
-        assert col.column_name == 'id'
-        assert col.filter(col.column_name) == 'id'
+        assert col.nulls_order == None
+        assert col.search_method == 'string_contains'
 
     def test_with_filter_ok(self):
         """Return column with a specific filter."""
-        col = ColumnDT('id', filter=lambda x: 'HANDLE %s' % x)
+        col = ColumnDT(User.name, search_method='like')
 
-        assert col.filter(col.column_name) == 'HANDLE id'
+        assert col.search_method == 'like'

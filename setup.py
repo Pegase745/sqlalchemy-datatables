@@ -18,7 +18,7 @@ setup(
     packages=['datatables'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['sqlalchemy'],
+    install_requires=['sqlalchemy', 'python-dateutil'],
     py_modules=['datatables'],
     test_suite='tests',
     classifiers=[

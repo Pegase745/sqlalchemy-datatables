@@ -1,10 +1,11 @@
 """Dummy unit tests models."""
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import (Column, Date, DateTime, ForeignKey, Integer, String,
+                        func)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import backref, relationship
 
 Base = declarative_base()
 
@@ -18,6 +19,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    birthday = Column(Date)
     address = relationship('Address', uselist=False, backref=backref('user'))
 
     def __unicode__(self):
@@ -30,11 +32,11 @@ class User(Base):
 
     @hybrid_property
     def dummy(self):
-        return '%s%s-DUMMY' % (self.name[0:1], str(self.id))
+        return self.name[0:3]
 
     @dummy.expression
     def dummy(cls):
-        return True
+        return func.substr(cls.name, 0, 3)
 
 
 class Address(Base):
