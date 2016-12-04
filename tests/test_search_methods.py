@@ -195,7 +195,7 @@ class SearchMethodTests(BaseTest):
             column=Address.description,
             search_method='yadcf_autocomplete',
             search_value='Avenue')
-        assert res['yadcf_data_0'] == ['Avenue', 'Road', 'Street']
+        assert set(res['yadcf_data_0']) == set(['Avenue', 'Road', 'Street'])
         assert res['recordsFiltered'] == '1'
 
     def test_yadcf_select(self):
@@ -203,7 +203,7 @@ class SearchMethodTests(BaseTest):
             column=Address.description,
             search_method='yadcf_select',
             search_value='Road')
-        assert res['yadcf_data_0'] == ['Avenue', 'Road', 'Street']
+        assert set(res['yadcf_data_0']) == set(['Avenue', 'Road', 'Street'])
         assert res['recordsFiltered'] == '1'
 
     def test_yadcf_multi_select(self):
@@ -211,7 +211,7 @@ class SearchMethodTests(BaseTest):
             column=Address.description,
             search_method='yadcf_multi_select',
             search_value='Avenue|StreetRoad')
-        assert res['yadcf_data_0'] == ['Avenue', 'Road', 'Street']
+        assert set(res['yadcf_data_0']) == set(['Avenue', 'Road', 'Street'])
         assert res['recordsFiltered'] == '1'
 
 
