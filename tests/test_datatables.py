@@ -15,10 +15,15 @@ class DataTablesTest(unittest.TestCase):
 
     def setUp(self):
         """Set up fake database session before all tests."""
-        engine = create_engine('sqlite://', echo=False)  # echo=True for debug
-        Base.metadata.create_all(engine)
-        Session = sessionmaker(bind=engine)
+        self.engine = create_engine(
+            'sqlite://', echo=False)  # echo=True for debug
+        Base.metadata.create_all(self.engine)
+        Session = sessionmaker(bind=self.engine)
         self.session = Session()
+
+    def tearDown(self):
+        """Tear down database."""
+        Base.metadata.drop_all(self.engine)
 
     def populate(self, nbUsers):
         """Create nbUsers in fake database."""
