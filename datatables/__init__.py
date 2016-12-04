@@ -4,17 +4,13 @@ from collections import namedtuple
 from logging import getLogger
 from dateutil.parser import parse as date_parse
 import datetime
+from sqlalchemy.dialects import postgresql, mysql, sqlite
 from sqlalchemy import func, Text, or_
 
 log = getLogger(__file__)
 
 if sys.version_info > (3, 0):
     unicode = str
-
-REGEX_OP = {
-    'mysql': 'regexp',
-    'postgresql': '~',
-}
 
 
 def clean_regex(regex):
@@ -57,6 +53,7 @@ def clean_regex(regex):
 
     # and back to the caller
     return ret_regex
+
 
 search_operators = {
     '=': lambda expr, value: expr == value,
@@ -241,7 +238,8 @@ class DataTables:
     :returns: a DataTables object
     """
 
-    def __init__(self, request, query, columns, dialect=None):
+    def __init__(self, request, query, columns,
+                 allow_regex_searches=False):
         """Initialize object and run the query."""
         self.params = dict(request)
         if 'sEcho' in self.params:
@@ -250,7 +248,7 @@ class DataTables:
         self.query = query
         self.columns = columns
         self.results = None
-        self.dialect = dialect
+        self.allow_regex_searches = allow_regex_searches
 
         # total in the table after filtering
         self.cardinality_filtered = 0
@@ -259,7 +257,7 @@ class DataTables:
         self.cardinality = 0
 
         self.yadcf_params = []
-
+        self.filter_expressions = []
         self.run()
 
     def output_result(self):
@@ -279,7 +277,7 @@ class DataTables:
               if e is not None and i is not exclude]
         )
 
-    def set_yadcf_data(self, query):
+    def _set_yadcf_data(self, query):
         # determine values for yadcf filters
         for i, col in enumerate(self.columns):
             if col.search_method in 'yadcf_range_number_slider':
@@ -304,10 +302,10 @@ class DataTables:
         # count before filtering
         self.cardinality = query.add_columns(self.columns[0].sqla_expr).count()
 
-        self.set_filter_expressions()
-        self.set_sort_expressions()
-
-        self.set_yadcf_data(query)
+        self._set_column_filter_expressions()
+        self._set_global_filter_expression()
+        self._set_sort_expressions()
+        self._set_yadcf_data(query)
 
         # apply filters
         query = query.filter(
@@ -329,18 +327,18 @@ class DataTables:
             *[c.sqla_expr for c in self.columns])
 
         # fetch the result of the queries
-
         column_names = [col.mData if col.mData else str(i)
                         for i, col in enumerate(self.columns)]
         self.results = [{k: v for k, v in zip(
             column_names, row)} for row in query.all()]
 
-    def set_filter_expressions(self):
+    def _set_column_filter_expressions(self):
         """Construct the query: filtering.
 
         Add filtering when per column searching is used
         """
-        filter_expressions = []
+
+        # per columns filters:
         for i in range(len(self.columns)):
             filter_expr = None
             value = self.params.get(
@@ -349,21 +347,29 @@ class DataTables:
                 search_func = search_methods[
                     self.columns[i].search_method]['to_query']
                 filter_expr = search_func(self.columns[i].sqla_expr, value)
-            filter_expressions.append(filter_expr)
+            self.filter_expressions.append(filter_expr)
 
+    def _set_global_filter_expression(self):
+        # global search filter
         global_search = self.params.get('search[value]', '')
-        if global_search is not '':
-            global_filter = []
-            for col in self.columns:
-                if col.global_search:
-                    global_filter.append(
-                        col.sqla_expr.cast(Text).
-                        ilike('%' + global_search + '%'))
-            filter_expressions.append(or_(*global_filter))
+        if global_search is '':
+            return
 
-        self.filter_expressions = filter_expressions
+        if (self.allow_regex_searches and
+                self.params.get('search[regex]') == 'true'):
+            op = self._get_regex_operator()
+            val = clean_regex(global_search)
+            filter_for = lambda col: col.sqla_expr.op(op)(val)
+        else:
+            val = '%' + global_search + '%'
+            filter_for = lambda col: col.sqla_expr.cast(Text).ilike(val)
 
-    def set_sort_expressions(self):
+        global_filter = [filter_for(col)
+                         for col in self.columns if col.global_search]
+
+        self.filter_expressions.append(or_(*global_filter))
+
+    def _set_sort_expressions(self):
         """Construct the query: sorting.
 
         Add sorting(ORDER BY) on the columns needed to be applied on.
@@ -394,3 +400,20 @@ class DataTables:
             sort_expressions.append(sort_expr)
             i += 1
         self.sort_expressions = sort_expressions
+
+    def _get_regex_operator(self):
+        if isinstance(
+                self.query.session.bind.dialect,
+                postgresql.dialect):
+            return '~'
+        elif isinstance(
+                self.query.session.bind.dialect,
+                mysql.dialect):
+            return 'REGEXP'
+        elif isinstance(
+                self.query.session.bind.dialect,
+                sqlite.dialect):
+            return 'REGEXP'
+        else:
+            raise NotImplementedError(
+                'Regex searches are not implemented for this dialect')

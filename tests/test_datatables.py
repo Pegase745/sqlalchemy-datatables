@@ -3,6 +3,7 @@ import unittest
 import faker
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import OperationalError
 from datatables import DataTables, ColumnDT
 from datetime import datetime
 from .models import Base, User, Address
@@ -201,6 +202,43 @@ class DataTablesTest(unittest.TestCase):
         assert res['recordsFiltered'] == '1'
         assert res['data'][0]['1'] == 'Fear Of'
         assert res['data'][0]['2'] == 'The Dark'
+
+    def test_global_search_filtering_with_regex(self):
+        """Test if result's are filtered from global search field."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('Run To', 'The Hills')
+        user7, addr7 = self.create_user('Fear Of', 'The Dark')
+        user8, addr8 = self.create_user('More fear of', 'The Daaaaark')
+
+        self.session.add(user6)
+        self.session.add(user7)
+        self.session.add(user8)
+        self.session.commit()
+
+        columns = [
+            ColumnDT(User.id,),
+            ColumnDT(User.name),
+            ColumnDT(Address.description),
+            ColumnDT(User.created_at),
+        ]
+
+        req = self.create_dt_params(search='Da*rk')
+        req['search[regex]'] = 'true'
+
+        # unfortunately sqlite doesn't support regexp out of the box'
+        try:
+            rowTable = DataTables(
+                req, self.session.query().select_from(User).join(Address),
+                columns, allow_regex_searches=True)
+            res = rowTable.output_result()
+            assert len(res['data']) == 1
+            assert res['recordsTotal'] == '8'
+            assert res['recordsFiltered'] == '8'
+            assert res['data'][0]['2'] == 'The Dark'
+            assert res['data'][1]['2'] == 'The Daaaaark'
+        except OperationalError as err:
+            assert 'no such function: REGEXP' in str(err)
 
     def test_column_not_searchable(self):
         """Test if a column is not searchable."""
