@@ -6,6 +6,7 @@ from dateutil.parser import parse as date_parse
 import datetime
 from sqlalchemy.dialects import postgresql, mysql, sqlite
 from sqlalchemy import func, Text, or_
+import math
 
 log = getLogger(__file__)
 
@@ -282,11 +283,13 @@ class DataTables:
         for i, col in enumerate(self.columns):
             if col.search_method in 'yadcf_range_number_slider':
                 v = query.add_columns(
-                    func.floor(func.min(col.sqla_expr)),
-                    func.ceil(func.max(col.sqla_expr))
+                    func.min(col.sqla_expr),
+                    func.max(col.sqla_expr)
                 ).one()
-                self.yadcf_params.append(
-                    ('yadcf_data_{:d}'.format(i), v))
+                self.yadcf_params.append((
+                    'yadcf_data_{:d}'.format(i),
+                    (math.floor(v[0]), math.ceil(v[1])))
+                )
             if col.search_method in ['yadcf_select', 'yadcf_multi_select',
                                      'yadcf_autocomplete']:
                 filtered = self._query_with_all_filters_except_one(
