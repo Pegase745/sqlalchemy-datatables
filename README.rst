@@ -6,7 +6,7 @@ sqlalchemy-datatables is a library providing an `SQLAlchemy <http://www.sqlalche
 
 It is framework agnostic, tested with `Pyramid <http://www.pylonsproject.org/>`_ and `Flask <http://flask.pocoo.org/>`_ mainly.
 
-It only depends on SQLAlchemy, and is compatible with versions **1.9.x** and **1.10.x** of DataTables.
+It only depends on SQLAlchemy, and is compatible with version **1.10.x** of DataTables.
 
 |Build Status| |PyPi Version| |PyPi Downloads| |Code Quality| |Coveralls|
 
