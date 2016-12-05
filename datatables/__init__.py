@@ -125,45 +125,19 @@ def yadcf_multi_select(expr, value):
 
 
 search_methods = {
-    'none': {
-        'to_query': lambda expr, value: None,
-    },
-    'string_contains': {
-        'to_query': lambda expr, value: expr.ilike('%' + value + '%'),
-    },
-    'ilike': {
-        'to_query': lambda expr, value: expr.ilike(value),
-    },
-    'like': {
-        'to_query': lambda expr, value: expr.like(value),
-    },
-    'numeric': {
-        'to_query': numeric_query,
-    },
-    'date': {
-        'to_query': date_query,
-    },
-    'yadcf_text': {
-        'to_query': lambda expr, value: expr.ilike('%' + value + '%'),
-    },
-    'yadcf_autocomplete': {
-        'to_query': lambda expr, value: expr == value,
-    },
-    'yadcf_select': {
-        'to_query': lambda expr, value: expr.ilike('%' + value + '%'),
-    },
-    'yadcf_multi_select': {
-        'to_query': yadcf_multi_select,
-    },
-    'yadcf_range_number': {
-        'to_query': yadcf_range_number,
-    },
-    'yadcf_range_number_slider': {
-        'to_query': yadcf_range_number,
-    },
-    'yadcf_range_date': {
-        'to_query': yadcf_range_date,
-    },
+    'none': lambda expr, value: None,
+    'string_contains': lambda expr, value: expr.ilike('%' + value + '%'),
+    'ilike': lambda expr, value: expr.ilike(value),
+    'like': lambda expr, value: expr.like(value),
+    'numeric': numeric_query,
+    'date': date_query,
+    'yadcf_text': lambda expr, value: expr.ilike('%' + value + '%'),
+    'yadcf_autocomplete': lambda expr, value: expr == value,
+    'yadcf_select': lambda expr, value: expr.ilike('%' + value + '%'),
+    'yadcf_multi_select': yadcf_multi_select,
+    'yadcf_range_number': yadcf_range_number,
+    'yadcf_range_number_slider': yadcf_range_number,
+    'yadcf_range_date': yadcf_range_date
 }
 
 
@@ -347,8 +321,7 @@ class DataTables:
             value = self.params.get(
                 'columns[{:d}][search][value]'.format(i), '')
             if value:
-                search_func = search_methods[
-                    self.columns[i].search_method]['to_query']
+                search_func = search_methods[self.columns[i].search_method]
                 filter_expr = search_func(self.columns[i].sqla_expr, value)
             self.filter_expressions.append(filter_expr)
 
