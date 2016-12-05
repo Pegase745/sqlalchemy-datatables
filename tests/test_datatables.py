@@ -231,19 +231,19 @@ class DataTablesTest(unittest.TestCase):
         req = self.create_dt_params(search='Da*rk')
         req['search[regex]'] = 'true'
 
-        # unfortunately sqlite doesn't support regexp out of the box'
-        try:
-            rowTable = DataTables(
-                req, self.session.query().select_from(User).join(Address),
-                columns, allow_regex_searches=True)
-            res = rowTable.output_result()
+        rowTable = DataTables(
+            req, self.session.query().select_from(User).join(Address),
+            columns, allow_regex_searches=True)
+        res = rowTable.output_result()
+        if 'error' in res:
+            # unfortunately sqlite doesn't support regexp out of the box'
+            assert 'no such function: REGEXP' in res['error']
+        else:
             assert len(res['data']) == 1
             assert res['recordsTotal'] == '8'
             assert res['recordsFiltered'] == '8'
             assert res['data'][0]['2'] == 'The Dark'
             assert res['data'][1]['2'] == 'The Daaaaark'
-        except OperationalError as err:
-            assert 'no such function: REGEXP' in str(err)
 
     def test_column_not_searchable(self):
         """Test if a column is not searchable."""
@@ -386,6 +386,55 @@ class DataTablesTest(unittest.TestCase):
         res = rowTable.output_result()
 
         assert res['data'][0]['2'] == '000_aaa'
+
+    def test_column_ordering_nulls(self):
+        """Test if a foreign key column is orderable."""
+        self.populate(5)
+
+        user6, addr6 = self.create_user('000_Whatever', '000_aaa')
+        user7, addr7 = self.create_user('zzz_Whatif', 'zzz_aaa')
+
+        self.session.add(user6)
+        self.session.add(user7)
+        self.session.commit()
+
+        columns = [
+            ColumnDT(User.id,),
+            ColumnDT(User.name),
+            ColumnDT(Address.description, 'nulls_first'),
+            ColumnDT(User.created_at),
+        ]
+
+        # NULLS FIRST
+        req = self.create_dt_params(order=[{"column": 2, "dir": "desc"}])
+
+        rowTable = DataTables(
+            req, self.session.query().select_from(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        if 'error' in res:
+            # sqlite3 doesn't support nulls ordering
+            assert res['error'] == '(sqlite3.OperationalError) near "NULLS"'
+
+        columns = [
+            ColumnDT(User.id,),
+            ColumnDT(User.name),
+            ColumnDT(Address.description, 'nulls_last'),
+            ColumnDT(User.created_at),
+        ]
+
+        # NULLS LAST
+        req = self.create_dt_params(order=[{"column": 2, "dir": "asc"}])
+
+        rowTable = DataTables(
+            req, self.session.query().select_from(User).join(Address), columns)
+
+        res = rowTable.output_result()
+
+        if 'error' in res:
+            # sqlite3 doesn't support nulls ordering
+            assert res['error'] == '(sqlite3.OperationalError) near "NULLS"'
 
     def test_outerjoin(self):
         """Test if outerjoin works."""

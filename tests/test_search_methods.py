@@ -71,20 +71,6 @@ class BaseTest(unittest.TestCase):
 
         return params
 
-# 'yadcf_autocomplete',
-# 'none',
-# 'date',
-# 'string_contains',
-# 'ilike',
-# 'yadcf_multi_select',
-# 'yadcf_range_date',
-# 'yadcf_text',
-# 'yadcf_select',
-# 'yadcf_range_number',
-# 'numeric',
-# 'yadcf_range_number_slider',
-# 'like'
-
 
 class SearchMethodTests(BaseTest):
 
@@ -109,6 +95,13 @@ class SearchMethodTests(BaseTest):
             search_method='numeric',
             search_value='10')
         assert res['recordsFiltered'] == '1'
+
+    def test_method_numeric_illegal_input(self):
+        res = self.get_result(
+            column=User.id,
+            search_method='numeric',
+            search_value='abc')
+        assert "could not convert string to float: 'abc'" in res['error']
 
     def test_method_numeric_eq(self):
         res = self.get_result(

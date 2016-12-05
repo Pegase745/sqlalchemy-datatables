@@ -233,7 +233,11 @@ class DataTables:
 
         self.yadcf_params = []
         self.filter_expressions = []
-        self.run()
+        self.error = None
+        try:
+            self.run()
+        except Exception as exc:
+            self.error = str(exc)
 
     def output_result(self):
         """Output results in the format needed by DataTables."""
@@ -241,6 +245,10 @@ class DataTables:
         output['draw'] = str(int(self.params['draw']))
         output['recordsTotal'] = str(self.cardinality)
         output['recordsFiltered'] = str(self.cardinality_filtered)
+        if self.error:
+            output['error'] = self.error
+            return output
+
         output['data'] = self.results
         for k, v in self.yadcf_params:
             output[k] = v
