@@ -101,7 +101,7 @@ class SearchMethodTests(BaseTest):
             column=User.id,
             search_method='numeric',
             search_value='abc')
-        assert "could not convert string to float: 'abc'" in res['error']
+        assert "could not convert string to float" in res['error']
 
     def test_method_numeric_eq(self):
         res = self.get_result(
