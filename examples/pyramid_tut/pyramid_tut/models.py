@@ -4,15 +4,11 @@ Basic example: a User has one or many Addresses.
 """
 import datetime
 
-from sqlalchemy import Column, Integer, Unicode, DateTime, ForeignKey
+from sqlalchemy import (Column, Date, DateTime, ForeignKey, Integer, Unicode,
+                        func)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (
-    scoped_session,
-    sessionmaker,
-    relationship,
-    backref,
-)
-
+from sqlalchemy.orm import (backref, column_property, relationship,
+                            scoped_session, sessionmaker)
 from zope.sqlalchemy import ZopeTransactionExtension
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -27,8 +23,14 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, unique=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    birthday = Column(Date)
     address = relationship('Address', uselist=False, backref=backref('user'))
+
+    # calculating age from date is a bit hacky with sqlite
+    age = column_property(
+        (func.strftime('%Y.%m%d', 'now') -
+         func.strftime('%Y.%m%d', birthday)).cast(Integer)
+    )
 
     def __unicode__(self):
         """Give a readable representation of an instance."""

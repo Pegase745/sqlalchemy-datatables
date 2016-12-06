@@ -1,0 +1,74 @@
+{% include 'base.jinja2' %}
+
+{% block extra_stylesheets %}
+  <link href="http://yadcf-showcase.appspot.com/resources/css/jquery.dataTables.10.min.css" rel="stylesheet" type="text/css"></link>
+	<link href="http://yadcf-showcase.appspot.com/resources/css/dataTables.colVis.css" rel="stylesheet" type="text/css"></link>
+	<link href="http://yadcf-showcase.appspot.com/resources/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"></link>
+	<link href="http://yadcf-showcase.appspot.com/resources/css/dataTables.responsive.css" rel="stylesheet" type="text/css" />
+	<link href="http://yadcf-showcase.appspot.com/resources/css/jquery-ui.1.9.0.css" rel="stylesheet" type="text/css" />
+	<link href="http://yadcf-showcase.appspot.com/resources/css/fixedHeader.dataTables.min.css" rel="stylesheet" type="text/css" />	
+	<link href="http://yadcf-showcase.appspot.com/resources/css/jquery.dataTables.yadcf.css" rel="stylesheet" type="text/css" />
+	<link href="http://yadcf-showcase.appspot.com/resources/css/shCore.css" rel="stylesheet" type="text/css" />
+	<link href="http://yadcf-showcase.appspot.com/resources/css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <h2>DataTables 1.10.x example: Users and their address.</h2>
+      <table id="dt_110x" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Birthday</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_javascripts %}
+ 
+  <script src="http://yadcf-showcase.appspot.com/resources/js/jquery-1.8.2.min.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/jquery-ui.1.9.0.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/chosen.jquery.min.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/jquery.dataTables.10.min.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/dataTables.fixedHeader.min.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/dataTables.responsive.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/dataTables.jqueryui.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/dataTables.colVis.js"></script>
+  <script src="http://yadcf-showcase.appspot.com/resources/js/jquery.dataTables.yadcf.js"></script>
+
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+      var table = $('#dt_110x').DataTable({
+        "processing": false,
+        "serverSide": true,
+        "ajax": "{{ request.route_path('data_yadcf') }}"
+      });
+
+      yadcf.init(table, [{
+        column_number: 0,
+        filter_type: "range_number"
+      }, {
+        column_number: 1,
+        filter_type: "multi_select"
+      }, {
+        column_number: 2,
+        filter_type: "auto_complete"
+      }, {
+        column_number: 3,
+        filter_type: "range_date"
+      }, {
+        column_number: 4,
+        filter_type: "range_number_slider"
+      }]);
+    });
+  </script>
+
+{% endblock %}
