@@ -6,6 +6,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 
 Unreleased_
 -----------
+Added
+~~~~~
+  - Support `length=-1` to disable paging.
 
 1.0.0_ - 2016-12-06
 -------------------

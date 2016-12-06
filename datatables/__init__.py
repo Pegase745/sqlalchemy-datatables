@@ -304,7 +304,14 @@ class DataTables:
             *[e for e in self.sort_expressions if e is not None])
 
         # add paging options
-        query = query.limit(int(self.params.get('length')))
+        length = int(self.params.get('length'))
+        if length >= 0:
+            query = query.limit(length)
+        elif length == -1:
+            pass
+        else:
+            raise(ValueError(
+                'Length should be a positive integer or -1 to disable'))
         query = query.offset(int(self.params.get('start')))
 
         # add columns to query

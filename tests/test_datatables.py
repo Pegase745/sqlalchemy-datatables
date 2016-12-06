@@ -3,7 +3,6 @@ import unittest
 import faker
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import OperationalError
 from datatables import DataTables, ColumnDT
 from datetime import datetime
 from .models import Base, User, Address
@@ -92,6 +91,36 @@ class DataTablesTest(unittest.TestCase):
         assert len(res['data']) == 5
         assert res['recordsTotal'] == '5'
         assert res['recordsFiltered'] == '5'
+
+    def test_length(self):
+        """Test if it returns a simple users list."""
+        self.populate(20)
+
+        columns = [ColumnDT(User.id), ]
+        req = self.create_dt_params(length=7)
+        rowTable = DataTables(req, self.session.query(), columns)
+        res = rowTable.output_result()
+        assert len(res['data']) == 7
+
+    def test_length_all(self):
+        """Test if it returns a simple users list."""
+        self.populate(20)
+
+        columns = [ColumnDT(User.id), ]
+        req = self.create_dt_params(length=-1)
+        rowTable = DataTables(req, self.session.query(), columns)
+        res = rowTable.output_result()
+        assert len(res['data']) == 20
+
+    def test_length_illegal_value(self):
+        """Test if it returns a simple users list."""
+        self.populate(20)
+
+        columns = [ColumnDT(User.id), ]
+        req = self.create_dt_params(length=-10)
+        rowTable = DataTables(req, self.session.query(), columns)
+        res = rowTable.output_result()
+        assert 'Length should be' in res['error']
 
     def test_list_users_with_hybrid_attribute(self):
         """Test if it returns a users list with a Hybrid column."""
