@@ -74,9 +74,10 @@ Usage
 
 You can find detailed a working example for Pyramid in the repository. Currently the Flask example is not working
 
-for the Pyramid example:
+**Pyramid example:**
 
 .. code-block:: bash
+
     # go to directory
     cd sqlalchemy-datatables/examples/pyramid_tut
 
