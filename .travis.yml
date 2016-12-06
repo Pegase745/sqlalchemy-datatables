@@ -1,17 +1,21 @@
 sudo: false
+
 language: python
+
 python:
   - "2.7"
-  - "3.4"
   - "3.5"
   - "pypy"
+
 install:
   - pip install -U pip
   - pip install -U setuptools
   - pip install .
   - pip install fake-factory
-  - pip install coveralls
+  - pip install pytest-cov
+
 script:
-  coverage run --source=datatables setup.py test
+  - py.test --cov=./
+
 after_success:
-  coveralls
+  - bash <(curl -s https://codecov.io/bash)

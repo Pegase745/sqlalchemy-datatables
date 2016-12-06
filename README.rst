@@ -8,7 +8,7 @@ It is framework agnostic, tested with `Pyramid <http://www.pylonsproject.org/>`_
 
 It only depends on SQLAlchemy, and is compatible with version **1.10.x** of DataTables.
 
-|Build Status| |PyPi Version| |PyPi Downloads| |Code Quality| |Coveralls|
+|Build Status| |PyPi Version| |Python Versions| |Coveralls| |PyPi Downloads|
 
 .. |Build Status| image:: https://img.shields.io/travis/Pegase745/sqlalchemy-datatables.svg?style=flat-square
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
@@ -16,14 +16,13 @@ It only depends on SQLAlchemy, and is compatible with version **1.10.x** of Data
 .. |PyPi Version| image:: https://img.shields.io/pypi/v/sqlalchemy-datatables.svg?style=flat-square
     :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
 
+.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/sqlalchemy-datatables.svg?style=flat-square
+
+.. |Coveralls| image:: https://img.shields.io/codecov/c/github/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://codecov.io/gh/Pegase745/sqlalchemy-datatables
+
 .. |PyPi Downloads| image:: https://img.shields.io/pypi/dm/sqlalchemy-datatables.svg?style=flat-square
     :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
-
-.. |Code Quality| image:: https://img.shields.io/scrutinizer/g/Pegase745/sqlalchemy-datatables.svg?style=flat-square
-    :target: https://scrutinizer-ci.com/g/Pegase745/sqlalchemy-datatables
-
-.. |Coveralls| image:: https://img.shields.io/coveralls/Pegase745/sqlalchemy-datatables.svg?style=flat-square
-    :target: https://coveralls.io/r/Pegase745/sqlalchemy-datatables
 
 Installation
 ------------

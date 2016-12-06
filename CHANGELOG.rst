@@ -10,6 +10,11 @@ Added
 ~~~~~
   - Support `length=-1` to disable paging.
 
+Changed
+~~~~~~~
+  - Use `codecov` to run coverage.
+  - Use `py.test` to launch tests on Travis.
+
 1.0.0_ - 2016-12-06
 -------------------
 Added
