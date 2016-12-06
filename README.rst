@@ -17,6 +17,7 @@ It only depends on SQLAlchemy, and is compatible with version **1.10.x** of Data
     :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
 
 .. |Python Versions| image:: https://img.shields.io/pypi/pyversions/sqlalchemy-datatables.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
 
 .. |Coveralls| image:: https://img.shields.io/codecov/c/github/Pegase745/sqlalchemy-datatables.svg?style=flat-square
     :target: https://codecov.io/gh/Pegase745/sqlalchemy-datatables
