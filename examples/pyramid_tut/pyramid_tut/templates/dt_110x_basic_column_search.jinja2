@@ -1,0 +1,75 @@
+{% include 'base.jinja2' %}
+
+{% block extra_stylesheets %}
+  <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <h2>Users and their address, text based filter per column</h2>
+      <table id="dt_110x" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Birthday</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Birthday</th>
+            <th>Age</th>
+          </tr>
+        </tfoot>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_javascripts %}
+  <style>
+    /* show search fields in header */
+    tfoot {
+      display: table-header-group;
+    }
+    /* hide general search */
+    .dataTables_filter {
+      visibility: hidden
+    }
+  </style>
+  <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+      // Setup - add a text input to each footer cell
+      $('#dt_110x tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+      });
+
+      var table = $('#dt_110x').DataTable({
+        "processing": false,
+        "serverSide": true,
+        "ajax": "{{ request.route_path('data') }}"
+      });
+
+      // Apply the search
+      table.columns().every( function () {
+        var that = this;
+        $( 'input', this.footer() ).on( 'keyup change', function () {
+          if ( that.search() !== this.value ) {
+            that
+              .search( this.value )
+              .draw();
+          }
+        });
+      });      
+    });
+  </script>
+{% endblock %}

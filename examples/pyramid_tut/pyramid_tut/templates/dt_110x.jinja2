@@ -14,7 +14,8 @@
             <th>Id</th>
             <th>Name</th>
             <th>Address</th>
-            <th>Created at</th>
+            <th>Birthday</th>
+            <th>Age</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -28,7 +29,7 @@
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
       var table = $('#dt_110x').DataTable({
-        "processing": true,
+        "processing": false,
         "serverSide": true,
         "ajax": "{{ request.route_path('data') }}"
       });

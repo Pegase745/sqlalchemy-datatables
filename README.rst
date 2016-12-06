@@ -46,23 +46,51 @@ Usage
     def data(request):
         """Return server side data."""
         # defining columns
-        columns = []
-        columns.append(ColumnDT('id'))
-        columns.append(ColumnDT('name', filter=upper))
-        columns.append(ColumnDT('address.description'))
-        columns.append(ColumnDT('created_at'))
+        #  - explicitly cast date to string, so string searching the date
+        #    will search a date formatted equal to how it is presented
+        #    in the table
+        columns = [
+            ColumnDT(User.id),
+            ColumnDT(User.name),
+            ColumnDT(Address.description),
+            ColumnDT(func.strftime('%d-%m-%Y', User.birthday)),
+            ColumnDT(User.age)
+        ]
 
         # defining the initial query depending on your purpose
-        query = DBSession.query(User).join(Address).filter(Address.id > 14)
+        #  - don't include any columns
+        #  - if you need a join, also include a 'select_from'
+        query = DBSession.query().\
+            select_from(User).\
+            join(Address).\
+            filter(Address.id > 4)
 
         # instantiating a DataTable for the query and table needed
-        rowTable = DataTables(request.GET, User, query, columns)
+        rowTable = DataTables(request.GET, query, columns)
 
         # returns what is needed by DataTable
         return rowTable.output_result()
 
 
-You can find detailed working examples for Pyramid and Flask in the repository.
+You can find detailed a working example for Pyramid in the repository, including per column search, and one with the `yadcf <https://github.com/vedmack/yadcf/>`_ plugin. Currently the Flask example is not working
+
+**Pyramid example:**
+
+.. code-block:: bash
+
+    # go to directory
+    cd sqlalchemy-datatables/examples/pyramid_tut
+
+    # install example app
+    pip install -e .
+
+    # initialize the database
+    initialize_pyramid_tut_db development.ini
+
+    # start server
+    pserve development.ini
+
+    # browse to localhost:6543
 
 Documentation
 -------------
