@@ -7,6 +7,24 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 Unreleased_
 -----------
 
+1.0.0_ - 2016-12-06
+-------------------
+Added
+~~~~~
+  - Reimplement API to rely on SQLALchemy core functions.
+  - Return error messages as 'error' property in result.
+  - Add tearDown to the tests.
+
+Changed
+~~~~~~~
+  - Update the pyramid example to reflect the new API.
+  - Enhance regular expressions search.
+
+Removed
+~~~~~~~
+  - Drop support for datatables <= 1.10.x.
+  - Drop python 2.6 and pypy3 from Travis.
+
 0.4.0_ - 2016-05-05
 -------------------
 Added
@@ -127,7 +145,8 @@ Added
 ~~~~~
   - Initial version of the lib.
 
-.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.4.0...master
+.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v1.0.0...master
+.. _0.4.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.4.0...v1.0.0
 .. _0.4.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.3.0...v0.4.0
 .. _0.3.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.1...v0.3.0
 .. _0.2.1: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.0...v0.2.1
