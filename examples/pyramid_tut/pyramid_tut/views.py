@@ -50,8 +50,9 @@ def dt_110x_yadcf(request):
 def data(request):
     """Return server side data."""
     # defining columns
-    # explicilty cast date to string, so string searching the date
-    # will give search a date formatted equal to how it is presented
+    #  - explicitly cast date to string, so string searching the date
+    #    will search a date formatted equal to how it is presented
+    #    in the table
     columns = [
         ColumnDT(User.id),
         ColumnDT(User.name),
@@ -61,6 +62,8 @@ def data(request):
     ]
 
     # defining the initial query depending on your purpose
+    #  - don't include any columns
+    #  - if you need a join, also include a 'select_from'
     query = DBSession.query().\
         select_from(User).\
         join(Address).\

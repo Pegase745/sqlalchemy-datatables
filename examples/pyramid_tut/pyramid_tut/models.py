@@ -4,8 +4,7 @@ Basic example: a User has one or many Addresses.
 """
 import datetime
 
-from sqlalchemy import (Column, Date, DateTime, ForeignKey, Integer, Unicode,
-                        func)
+from sqlalchemy import Column, Date, ForeignKey, Integer, Unicode, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (backref, column_property, relationship,
                             scoped_session, sessionmaker)
