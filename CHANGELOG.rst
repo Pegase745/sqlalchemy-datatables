@@ -6,6 +6,20 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 
 Unreleased_
 -----------
+
+1.2.0_ - 2016-12-06
+-------------------
+Changed
+~~~~~~~
+  - Update the flask example to reflect the new API.
+
+Fixed
+~~~~~
+  - Fix tests on Travis by refactoring and using persistant database.
+  - Fix PEP8.
+
+1.1.0_ - 2016-12-06
+-------------------
 Added
 ~~~~~
   - Support `length=-1` to disable paging.
@@ -153,8 +167,10 @@ Added
 ~~~~~
   - Initial version of the lib.
 
-.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v1.0.0...master
-.. _0.4.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.4.0...v1.0.0
+.. _Unreleased: https://github.com/Pegase745/sqlalchemy-datatables/compare/v1.2.0...master
+.. _1.2.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v1.1.0...v1.2.0
+.. _1.1.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v1.0.0...v1.1.0
+.. _1.0.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.4.0...v1.0.0
 .. _0.4.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.3.0...v0.4.0
 .. _0.3.0: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.1...v0.3.0
 .. _0.2.1: https://github.com/Pegase745/sqlalchemy-datatables/compare/v0.2.0...v0.2.1
