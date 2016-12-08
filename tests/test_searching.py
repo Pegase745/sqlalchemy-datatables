@@ -1,83 +1,19 @@
 """DataTables unit tests."""
-import unittest
-import faker
-from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import OperationalError
+from sqlalchemy import func
 from datatables import DataTables, ColumnDT
-from datetime import datetime, timedelta
-from .models import Base, User, Address
-import itertools
+
+from . import BaseTest
+from .models import User, Address
 
 
-class BaseTest(unittest.TestCase):
+class SearchingTest(BaseTest):
 
-    """Class defining a DataTables test plan."""
-
-    @classmethod
-    def setUpClass(cls):
-        """Set up fake database session before all tests."""
-        cls.engine = create_engine(
-            'sqlite://', echo=False)  # echo=True for debug
-        Base.metadata.create_all(cls.engine)
-        Session = sessionmaker(bind=cls.engine)
-        cls.session = Session()
-        cls.populate()
-
-    @classmethod
-    def tearDownClass(cls):
-        """Set up fake database session before all tests."""
-        Base.metadata.drop_all(cls.engine)
-
-    @classmethod
-    def populate(cls):
-        """Create 3 adresses and 50 users."""
-
-        f = faker.Faker(seed=1)
-        addresses = [Address(description=d)
-                     for d in ['Street', 'Avenue', 'Road']]
-        cls.session.add_all(addresses)
-
-        users = []
-        for i, addr in zip(range(0, 50), itertools.cycle(addresses)):
-            user = User(
-                name=f.name(),
-                address=addr,
-                birthday=datetime(1970, 1, 2) + timedelta(days=10 * i)
-            )
-            users.append(user)
-
-        cls.session.add_all(users)
-        cls.session.commit()
-
-    def basic_dt_params(self, columns):
-        """Create DataTables input parameters."""
-        params = {
-            'draw': '1',
-            'start': '0',
-            'length': '10',
-            'search[value]': '',
-            'search[regex]': 'false'
-        }
-
-        for i, item in enumerate(columns):
-            cols = 'columns[%s]' % i
-            params['%s%s' % (cols, '[data]')] = i
-            params['%s%s' % (cols, '[name]')] = ''
-            params['%s%s' % (cols, '[searchable]')] = 'true'
-            params['%s%s' % (cols, '[orderable]')] = 'true'
-            params['%s%s' % (cols, '[search][value]')] = ''
-            params['%s%s' % (cols, '[search][regex]')] = 'false'
-
-        return params
-
-
-class SearchMethodTests(BaseTest):
+    """Class defining a test plan for searching elements."""
 
     def get_result(self, column, search_method, search_value):
         columns = [ColumnDT(column, search_method=search_method)]
         query = self.session.query()
-        params = self.basic_dt_params(columns)
+        params = self.create_dt_params(columns)
         params['columns[0][search][value]'] = search_value
         rowTable = DataTables(params, query, columns)
         return rowTable.output_result()
@@ -214,8 +150,10 @@ class SearchMethodTests(BaseTest):
 
 class ComplexQueryTest(BaseTest):
 
-    def test_group_by(self):
+    """Class defining complex query search test plan."""
 
+    def test_group_by(self):
+        """Test group by after a join query."""
         columns = [
             ColumnDT(func.count(User.id)),
             ColumnDT(Address.id)]
@@ -225,7 +163,7 @@ class ComplexQueryTest(BaseTest):
             join(Address).\
             group_by(Address)
 
-        params = self.basic_dt_params(columns)
+        params = self.create_dt_params(columns)
         rowTable = DataTables(params, query, columns)
         res = rowTable.output_result()
 

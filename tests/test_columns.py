@@ -1,10 +1,11 @@
 """Column DataTable unit tests."""
-import unittest
 from datatables import ColumnDT
+
+from . import BaseTest
 from .models import User
 
 
-class ColumnTest(unittest.TestCase):
+class ColumnTest(BaseTest):
 
     """Class defining a DataTables Column test plan."""
 
