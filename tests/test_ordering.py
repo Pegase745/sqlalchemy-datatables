@@ -7,7 +7,10 @@ from .models import User, Address
 
 class OrderingTest(BaseTest):
 
+    """Class defining a test plan for ordering columns."""
+
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='000_User')
         self.user52 = User(name='zzz_User')
         self.addr4 = Address(description='000_Address')
@@ -21,7 +24,7 @@ class OrderingTest(BaseTest):
         self.session.commit()
 
     def tearDown(self):
-
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.delete(self.user52)
         self.session.delete(self.user53)
@@ -30,11 +33,8 @@ class OrderingTest(BaseTest):
         self.session.delete(self.addr5)
         self.session.commit()
 
-    """Class defining a test plan for ordering elements."""
-
     def test_ordering(self):
         """Test if it returns a list with the correct order."""
-
         columns = [
             ColumnDT(User.id,),
             ColumnDT(User.name)]
@@ -60,7 +60,6 @@ class OrderingTest(BaseTest):
 
     def test_ordering_nulls(self):
         """Test if it returns a list with the correct nulls order."""
-
         columns = [
             ColumnDT(User.id,),
             ColumnDT(User.name),

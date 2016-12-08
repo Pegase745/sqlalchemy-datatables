@@ -15,13 +15,13 @@ if sys.version_info > (3, 0):
 
 
 def clean_regex(regex):
-    '''
-    escape any regex special characters other than alternation |
+    """
+    Escape any regex special characters other than alternation.
 
     :param regex: regex from datatables interface
     :type regex: str
     :rtype: str with regex to use with database
-    '''
+    """
     # copy for return
     ret_regex = regex
 
@@ -67,7 +67,6 @@ search_operators = {
 
 def parse_query_value(combined_value):
     """Parse value in form of '>value' to a lambda and a value."""
-
     split = len(combined_value) - len(combined_value.lstrip('<>='))
     operator = combined_value[:split]
     if operator == '':
@@ -161,7 +160,7 @@ class ColumnDT(ColumnTuple):
     :param sqla_expr: SQLAlchemy queryable attribute of object
         (column, column_property, hubrid property, or
         combined expression)
-    :type sqla_expr: ?
+    :type sqla_expr: SQLAlchemy query expression
     :param mData: name of the mData property as defined in the
         DataTables javascript options (default None)
     :type mData: str
@@ -327,9 +326,8 @@ class DataTables:
     def _set_column_filter_expressions(self):
         """Construct the query: filtering.
 
-        Add filtering when per column searching is used
+        Add filtering when per column searching is used.
         """
-
         # per columns filters:
         for i in range(len(self.columns)):
             filter_expr = None
@@ -350,10 +348,14 @@ class DataTables:
                 self.params.get('search[regex]') == 'true'):
             op = self._get_regex_operator()
             val = clean_regex(global_search)
-            filter_for = lambda col: col.sqla_expr.op(op)(val)
+
+            def filter_for(col):
+                return col.sqla_expr.op(op)(val)
         else:
             val = '%' + global_search + '%'
-            filter_for = lambda col: col.sqla_expr.cast(Text).ilike(val)
+
+            def filter_for(col):
+                return col.sqla_expr.cast(Text).ilike(val)
 
         global_filter = [filter_for(col)
                          for col in self.columns if col.global_search]

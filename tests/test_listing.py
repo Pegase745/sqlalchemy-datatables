@@ -93,18 +93,21 @@ class ListingTest(BaseTest):
 
 class ListingTest2(BaseTest):
 
+    """Class defining a test plan for listing elements."""
+
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='User 51')
         self.session.add(self.user51)
         self.session.commit()
 
     def tearDown(self):
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.commit()
 
     def test_list_hybrid_attributes(self):
         """Test if it returns a list of users with a hybrid property."""
-
         columns = [
             ColumnDT(User.id),
             ColumnDT(User.dummy),
@@ -126,7 +129,10 @@ class ListingTest2(BaseTest):
 
 class ListingTest3(BaseTest):
 
+    """Class defining a test plan for listing elements."""
+
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='User 51')
         self.user52 = User(name='User 52')
         self.session.add(self.user51)
@@ -134,6 +140,7 @@ class ListingTest3(BaseTest):
         self.session.commit()
 
     def tearDown(self):
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.delete(self.user52)
         self.session.commit()

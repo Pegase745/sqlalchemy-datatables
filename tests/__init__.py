@@ -74,11 +74,3 @@ class BaseTest(unittest.TestCase):
                 params['order[%s][%s]' % (i, key)] = str(value)
 
         return params
-
-    def create_user(self, name, address, birthday=datetime.now()):
-        """Create a custom fake user."""
-        addr = Address(description=address)
-
-        user = User(name=name, address=addr, birthday=birthday)
-
-        return user, addr

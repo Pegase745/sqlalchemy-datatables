@@ -31,6 +31,7 @@ class FieldsTest(BaseTest):
         assert 'Created at' in res['data'][0]
 
     def test_fields_search_filters(self):
+        """Test if the result's data are filtered after search."""
         query = self.session.query()
 
         columns = [
@@ -51,6 +52,7 @@ class FieldsTest(BaseTest):
         assert len(res['data']) == 1
 
     def test_calculating_age_on_the_fly(self):
+        """Test if the result's have a custom field."""
         query = self.session.query().filter(User.id > 5)
 
         columns = [
@@ -69,7 +71,10 @@ class FieldsTest(BaseTest):
 
 class FieldsTest2(BaseTest):
 
+    """Class defining a test plan for fields."""
+
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='User 51')
         self.user52 = User(name='User 52')
 
@@ -78,13 +83,13 @@ class FieldsTest2(BaseTest):
         self.session.commit()
 
     def tearDown(self):
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.delete(self.user52)
         self.session.commit()
 
     def test_fields_filtering(self):
         """Test if result's are filtered from global search field."""
-
         columns = [
             ColumnDT(User.id,),
             ColumnDT(User.name)]
@@ -104,7 +109,10 @@ class FieldsTest2(BaseTest):
 
 class FieldsTest3(BaseTest):
 
+    """Class defining a test plan for fields."""
+
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='Run To')
         self.user52 = User(name='Feeeeear Of')
 
@@ -113,6 +121,7 @@ class FieldsTest3(BaseTest):
         self.session.commit()
 
     def tearDown(self):
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.delete(self.user52)
         self.session.commit()
@@ -142,14 +151,18 @@ class FieldsTest3(BaseTest):
             assert res['data'][0]['1'] == 'Feeeeear Of'
 
 
-class FieldsTest3(BaseTest):
+class FieldsTest4(BaseTest):
+
+    """Class defining a test plan for fields."""
 
     def setUp(self):
+        """Set up fake population before tests."""
         self.user51 = User(name='User 51')
         self.session.add(self.user51)
         self.session.commit()
 
     def tearDown(self):
+        """Tear down fake population after tests."""
         self.session.delete(self.user51)
         self.session.commit()
 

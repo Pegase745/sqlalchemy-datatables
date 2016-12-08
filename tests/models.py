@@ -32,10 +32,12 @@ class User(Base):
 
     @hybrid_property
     def dummy(self):
+        """Dummy hybrid property."""
         return self.name[0:3]
 
     @dummy.expression
     def dummy(cls):
+        """Dummy expression."""
         return func.substr(cls.name, 0, 3)
 
 
