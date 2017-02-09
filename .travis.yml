@@ -11,7 +11,7 @@ install:
   - pip install -U pip
   - pip install -U setuptools
   - pip install .
-  - pip install fake-factory
+  - pip install faker
   - pip install pytest-cov
 
 script:
