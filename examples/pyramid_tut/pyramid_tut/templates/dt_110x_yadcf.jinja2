@@ -3,7 +3,7 @@
 {% block content %}
   <div class="row-fluid">
     <div class="col-lg-12">
-      <h2>DataTables 1.10.x example: Users and their address.</h2>
+      <h2>DataTables 1.10.x example: Users and their address, with the <a href='https://github.com/vedmack/yadcf' >yadcf</a> plugin</h2>
       <table id="dt_110x" class="table table-striped" cellspacing="0" width="100%">
         <thead>
           <tr>
@@ -37,7 +37,8 @@
         filter_type: "range_number"
       }, {
         column_number: 1,
-        filter_type: "select"
+        filter_type: "multi_select",
+        select_type: "chosen"
       }, {
         column_number: 2,
         filter_type: "auto_complete"
