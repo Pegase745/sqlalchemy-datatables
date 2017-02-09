@@ -8,22 +8,16 @@ It is framework agnostic, tested with `Pyramid <http://www.pylonsproject.org/>`_
 
 It only depends on SQLAlchemy, and is compatible with version **1.10.x** of DataTables.
 
-|Build Status| |PyPi Version| |Python Versions| |Coverage| |PyPi Downloads|
+|Build Status| |PyPi Version| |Coverage|
 
-.. |Build Status| image:: https://img.shields.io/travis/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+.. |Build Status| image:: https://travis-ci.org/Pegase745/sqlalchemy-datatables.svg?branch=master
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
 
-.. |PyPi Version| image:: https://img.shields.io/pypi/v/sqlalchemy-datatables.svg?style=flat-square
+.. |PyPi Version| image:: https://badge.fury.io/py/sqlalchemy-datatables.svg
     :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
 
-.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/sqlalchemy-datatables.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
-
-.. |Coverage| image:: https://img.shields.io/codecov/c/github/Pegase745/sqlalchemy-datatables.svg?style=flat-square
+.. |Coverage| image:: https://codecov.io/gh/Pegase745/sqlalchemy-datatables/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/Pegase745/sqlalchemy-datatables
-
-.. |PyPi Downloads| image:: https://img.shields.io/pypi/dm/sqlalchemy-datatables.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
 
 Installation
 ------------
