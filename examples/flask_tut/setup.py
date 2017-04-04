@@ -8,9 +8,9 @@ with open(os.path.join(here, 'README.txt')) as f:
     README = f.read()
 
 requires = [
-    'Flask',
-    'Jinja2',
-    'Flask-SQLAlchemy',
+    'Flask>=0.12.1',
+    'jinja2',
+    'flask_sqlalchemy',
 ]
 
 setup(name='flask_tut',
@@ -28,9 +28,6 @@ setup(name='flask_tut',
       url='',
       keywords='web wsgi bfg flask',
       packages=find_packages(),
-      scripts=[
-          'flask_tut/scripts/initializedb.py',
-      ],
       include_package_data=True,
       zip_safe=False,
       test_suite='flask_tut',

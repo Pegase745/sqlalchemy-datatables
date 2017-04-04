@@ -8,7 +8,7 @@ Getting Started
 
 - $VENV/bin/python setup.py develop
 
-- $VENV/bin/initializedb.py
+- $VENV/bin/python flask_tut/scripts/initializedb.py
 
 - $VENV/bin/python flask_tut/__init__.py
 
