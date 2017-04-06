@@ -66,7 +66,7 @@ Usage
         return rowTable.output_result()
 
 
-You can find detailed a working example for Pyramid in the repository, including per column search, and one with the `yadcf <https://github.com/vedmack/yadcf/>`_ plugin. Currently the Flask example is not working
+You can find a detailed working example for Pyramid and Flask in the repository, including per column search, and one with the `yadcf <https://github.com/vedmack/yadcf/>`_ plugin.
 
 **Pyramid example:**
 
