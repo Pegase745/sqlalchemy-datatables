@@ -25,6 +25,13 @@ def dt_110x(request):
     return {'project': 'dt_110x'}
 
 
+@view_config(route_name='dt_110x_custom_column',
+             renderer='templates/dt_110x_custom_column.jinja2')
+def dt_110x_custom_column(request):
+    """Show a CRUD custom column"""
+    return {'project': 'dt_110x_custom_column'}
+
+
 @view_config(route_name='dt_110x_basic_column_search',
              renderer='templates/dt_110x_basic_column_search.jinja2')
 def dt_110x_basic_column_search(request):
