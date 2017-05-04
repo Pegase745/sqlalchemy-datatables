@@ -5,7 +5,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy import func
 from datatables import ColumnDT, DataTables
 
-from .models import Address, DBSession, User
+from .models import Address, DBSession, User, Income
 
 
 @view_config(route_name='home', renderer='templates/home.jinja2')
@@ -25,31 +25,38 @@ def dt_110x(request):
     return {'project': 'dt_110x'}
 
 
+@view_config(route_name='dt_110x_func',
+             renderer='templates/dt_110x_func.jinja2')
+def dt_110x_func(request):
+    """List users with DataTables >= 1.10.x."""
+    return {'project': 'dt_110x_func'}
+
+
 @view_config(route_name='dt_110x_custom_column',
              renderer='templates/dt_110x_custom_column.jinja2')
 def dt_110x_custom_column(request):
-    """Show a CRUD custom column"""
+    """Show a CRUD custom column."""
     return {'project': 'dt_110x_custom_column'}
 
 
 @view_config(route_name='dt_110x_basic_column_search',
              renderer='templates/dt_110x_basic_column_search.jinja2')
 def dt_110x_basic_column_search(request):
-    """Text based per column search"""
+    """Text based per column search."""
     return {'project': 'dt_110x_basic_column_search'}
 
 
 @view_config(route_name='dt_110x_advanced_column_search',
              renderer='templates/dt_110x_advanced_column_search.jinja2')
 def dt_110x_advanced_column_search(request):
-    """Advanced per column search"""
+    """Advanced per column search."""
     return {'project': 'dt_110x_advanced_column_search'}
 
 
 @view_config(route_name='dt_110x_yadcf',
              renderer='templates/dt_110x_yadcf.jinja2')
 def dt_110x_yadcf(request):
-    """Search with yadcf"""
+    """Search with yadcf."""
     return {'project': 'dt_110x_yadcf'}
 
 
@@ -125,6 +132,31 @@ def data_yadcf(request):
         select_from(User).\
         join(Address).\
         filter(Address.id > 4)
+
+    # instantiating a DataTable for the query and table needed
+    rowTable = DataTables(request.GET, query, columns)
+
+    # returns what is needed by DataTable
+    return rowTable.output_result()
+
+
+@view_config(route_name='data_func', renderer='json')
+def data_func(request):
+    """Return server side data."""
+    # defining columns
+    columns = [
+        ColumnDT(User.name),
+        ColumnDT(func.sum(Income.amount).label(
+            'Total incomes'), global_search=False),
+    ]
+
+    # defining the initial query depending on your purpose
+    #  - don't include any columns
+    #  - if you need a join, also include a 'select_from'
+    query = DBSession.query().\
+        select_from(User).\
+        join(Income).\
+        group_by(User.name)
 
     # instantiating a DataTable for the query and table needed
     rowTable = DataTables(request.GET, query, columns)

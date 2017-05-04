@@ -3,8 +3,8 @@
 Basic example: a User has one or many Addresses.
 """
 import datetime
-
-from sqlalchemy import Column, Date, ForeignKey, Integer, Unicode, func
+from sqlalchemy import (Column, Date, ForeignKey,
+                        Integer, Unicode, func, DateTime)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (backref, column_property, relationship,
                             scoped_session, sessionmaker)
@@ -15,7 +15,6 @@ Base = declarative_base()
 
 
 class User(Base):
-
     """Define a User."""
 
     __tablename__ = 'users'
@@ -24,6 +23,7 @@ class User(Base):
     name = Column(Unicode, unique=True)
     birthday = Column(Date)
     address = relationship('Address', uselist=False, backref=backref('user'))
+    incomes = relationship('Income', backref=backref('user'))
 
     # calculating age from date is a bit hacky with sqlite
     age = column_property(
@@ -41,7 +41,6 @@ class User(Base):
 
 
 class Address(Base):
-
     """Define an Address."""
 
     __tablename__ = 'addresses'
@@ -49,6 +48,25 @@ class Address(Base):
     id = Column(Integer, primary_key=True)
     description = Column(Unicode, unique=True)
     user_id = Column(Integer, ForeignKey('users.id'))
+
+    def __unicode__(self):
+        """Give a readable representation of an instance."""
+        return '%s' % (self.id)
+
+    def __repr__(self):
+        """Give a unambiguous representation of an instance."""
+        return '<%s#%s>' % (self.__class__.__name__, self.id)
+
+
+class Income(Base):
+    """Define an Income."""
+
+    __tablename__ = 'incomes'
+
+    id = Column(Integer, primary_key=True)
+    amount = Column(Integer, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     def __unicode__(self):
         """Give a readable representation of an instance."""

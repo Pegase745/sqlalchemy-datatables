@@ -22,9 +22,11 @@ def main(global_config, **settings):
     config.include('pyramid_debugtoolbar')
     config.add_route('home', '/')
     config.add_route('data', '/data')
+    config.add_route('data_func', '/data_func')
     config.add_route('data_advanced', '/data_advanced')
     config.add_route('data_yadcf', '/data_yadcf')
     config.add_route('dt_110x', '/dt_110x')
+    config.add_route('dt_110x_func', '/dt_110x_func')
     config.add_route('dt_110x_custom_column', '/dt_110x_custom_column')
     config.add_route('dt_110x_basic_column_search',
                      '/dt_110x_basic_column_search')
