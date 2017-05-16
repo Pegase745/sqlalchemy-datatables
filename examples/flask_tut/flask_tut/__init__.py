@@ -1,14 +1,18 @@
 """Flask tutorial views."""
 from flask import render_template, request, jsonify
+from flask import Flask
 
 from datatables import ColumnDT, DataTables
 
 from flask_tut.models import (
-    app,
     db,
     User,
     Address,
 )
+
+app = Flask(__name__)
+app.config.from_pyfile('../app.cfg')
+db.init_app(app)
 
 
 @app.route("/")
