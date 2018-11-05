@@ -1,12 +1,6 @@
-=================================================================
-`sqlalchemy-datatables <http://sqlalchemy-datatables.rtfd.org/>`_
-=================================================================
-
-sqlalchemy-datatables is a library providing an `SQLAlchemy <http://www.sqlalchemy.org/>`_ integration of jQuery `DataTables <http://datatables.net/>`_. It helps you manage server side requests in your application.
-
-It is framework agnostic, tested with `Pyramid <http://www.pylonsproject.org/>`_ and `Flask <http://flask.pocoo.org/>`_ mainly.
-
-It only depends on SQLAlchemy, and is compatible with version **1.10.x** of DataTables.
+======================
+sqlalchemy-datatables
+======================
 
 |Build Status| |PyPi Version| |Coverage|
 
@@ -19,15 +13,39 @@ It only depends on SQLAlchemy, and is compatible with version **1.10.x** of Data
 .. |Coverage| image:: https://codecov.io/gh/Pegase745/sqlalchemy-datatables/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/Pegase745/sqlalchemy-datatables
 
+sqlalchemy-datatables is a framework agnostic library providing an `SQLAlchemy <http://www.sqlalchemy.org/>`_ integration of jQuery `DataTables <http://datatables.net/>`_ >= 1.10, and helping you manage server side requests in your application.
+
 Installation
 ------------
 
-To install the stable version:
+**To install via pip:**
+
+*Python 2*
 
 .. code-block:: bash
 
-    pip install sqlalchemy-datatables
+    $ pip install sqlalchemy-datatables
 
+*Python 3*
+
+.. code-block:: bash
+
+    $ pip3 install sqlalchemy-datatables
+
+**To install from source:**
+
+.. code-block:: bash
+    $ git clone git@github.com:Pegase745/sqlalchemy-datatables.git
+    $ cd sqlalchemy-datatables
+    $ pip install .
+
+**To contribute:**
+
+.. code-block:: bash
+
+    $ git clone git@github.com:Pegase745/sqlalchemy-datatables.git
+    $ cd sqlalchemy-datatables
+    $ make all
 
 Usage
 -----
@@ -86,15 +104,10 @@ You can find a detailed working example for Pyramid and Flask in the repository,
 
     # browse to localhost:6543
 
-Documentation
--------------
-
-The latest documentation is available online on `Read the Docs <http://sqlalchemy-datatables.readthedocs.org/en/latest/>`_.
-
 Changelog
 ---------
 
-All notable changes to this project will be documented in `this section <CHANGELOG.rst>`_.
+All notable changes to this project will be documented in `this section <https://github.com/Pegase745/sqlalchemy-datatables/releases>`_.
 
 This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A Changelog <http://keepachangelog.com/>`_.
 

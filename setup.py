@@ -1,9 +1,6 @@
-"""App configuration."""
 from setuptools import setup
 
-
 __VERSION__ = '1.2.0'
-
 
 setup(
     name='sqlalchemy-datatables',
@@ -15,10 +12,23 @@ setup(
     author='Michel Nemnom',
     author_email='michel.nemnom+pypi@gmail.com',
     url='https://github.com/pegase745/sqlalchemy-datatables',
-    packages=['datatables'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['sqlalchemy', 'python-dateutil'],
+    install_requires=[
+        'sqlalchemy',
+        'python-dateutil',
+    ],
+    extras_require={
+        'dev': [
+            'faker',
+            'flake8',
+            'flake8-docstrings',
+            'isort',
+            'pytest',
+            'pytest-cov',
+            'yapf',
+        ]
+    },
     py_modules=['datatables'],
     test_suite='tests',
     classifiers=[
@@ -36,5 +46,4 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ]
-)
+    ])

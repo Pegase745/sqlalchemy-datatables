@@ -1,15 +1,14 @@
-"""Column DataTable unit tests."""
+from unittest import TestCase
+
+import pytest
+
 from datatables import ColumnDT
 
-from . import BaseTest
 from .models import User
 
 
-class ColumnTest(BaseTest):
-
-    """Class defining a DataTables Column test plan."""
-
-    def test_with_default_params_ok(self):
+class ColumnDTTest(TestCase):
+    def test_init_with_default_params(self):
         """Return column with given default params."""
         col = ColumnDT(User.id)
 
@@ -29,10 +28,10 @@ class ColumnTest(BaseTest):
 
     def test_with_invalid_nulls_order(self):
         """Return column with a specific filter."""
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ColumnDT(User.name, nulls_order='invalid')
 
     def test_with_invalid_search_method(self):
         """Return column with a specific filter."""
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ColumnDT(User.name, search_method='invalid')

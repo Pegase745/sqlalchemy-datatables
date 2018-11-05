@@ -1,8 +1,6 @@
-"""Dummy unit tests models."""
 import datetime
 
-from sqlalchemy import (Column, Date, DateTime, ForeignKey, Integer, String,
-                        func)
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
@@ -11,7 +9,6 @@ Base = declarative_base()
 
 
 class User(Base):
-
     """Define a User."""
 
     __tablename__ = 'users'
@@ -32,17 +29,16 @@ class User(Base):
 
     @hybrid_property
     def dummy(self):
-        """Dummy hybrid property."""
+        """Create a dummy hybrid property."""
         return self.name[0:3]
 
     @dummy.expression
     def dummy(cls):
-        """Dummy expression."""
+        """Create a dummy expression."""
         return func.substr(cls.name, 0, 3)
 
 
 class Address(Base):
-
     """Define an Address."""
 
     __tablename__ = 'addresses'
