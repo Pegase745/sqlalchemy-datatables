@@ -1,9 +1,7 @@
-{% include 'base.jinja2' %}
-
+{% include 'base.html' %}
 {% block extra_stylesheets %}
   <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css" rel="stylesheet">
 {% endblock %}
-
 {% block content %}
   <div class="row-fluid">
     <div class="col-lg-12">
@@ -18,21 +16,20 @@
             <th>Age</th>
           </tr>
         </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+      <tbody></tbody>
+    </table>
   </div>
+</div>
 {% endblock %}
-
 {% block extra_javascripts %}
-  <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-      var table = $('#dt_110x').DataTable({
-        "processing": false,
-        "serverSide": true,
-        "ajax": "{{ request.route_path('data') }}"
-      });
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function(){
+    var table = $('#dt_110x').DataTable({
+      "processing": false,
+      "serverSide": true,
+      "ajax": "{{ request.route_path('data') }}"
     });
-  </script>
+  });
+</script>
 {% endblock %}

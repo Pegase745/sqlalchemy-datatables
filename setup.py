@@ -2,6 +2,23 @@ from setuptools import setup
 
 __VERSION__ = '1.2.0'
 
+FLASK_EXAMPLE = [
+    'Flask',
+    'jinja2',
+    'flask_sqlalchemy',
+]
+
+PYRAMID_EXAMPLE = [
+    'pyramid',
+    'pyramid_jinja2',
+    'pyramid_debugtoolbar',
+    'pyramid_tm',
+    'SQLAlchemy',
+    'transaction',
+    'zope.sqlalchemy',
+    'waitress',
+]
+
 setup(
     name='sqlalchemy-datatables',
     version=__VERSION__,
@@ -27,7 +44,8 @@ setup(
             'pytest',
             'pytest-cov',
             'yapf',
-        ]
+        ],
+        'examples': [FLASK_EXAMPLE + PYRAMID_EXAMPLE]
     },
     py_modules=['datatables'],
     test_suite='tests',

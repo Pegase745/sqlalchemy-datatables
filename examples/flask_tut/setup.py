@@ -4,10 +4,8 @@ from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, "README.txt")) as f:
+with open(os.path.join(here, "README.rst")) as f:
     README = f.read()
-
-requires = []
 
 setup(
     name="flask_tut",
@@ -27,5 +25,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     test_suite="flask_tut",
-    install_requires=requires,
+    install_requires=[],
 )

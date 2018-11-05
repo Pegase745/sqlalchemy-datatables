@@ -5,10 +5,13 @@ all: install lint test
 install:
 	pip install -e .[dev]
 
+install-examples:
+	pip install -e .[examples]
+
 lint:
 	flake8
 	isort -rc -c -df **/*.py
-	yapf -dr datatables/ tests/
+	yapf -dr datatables/ tests/ examples/
 
 test:
 	pytest -vx

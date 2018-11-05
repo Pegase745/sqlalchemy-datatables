@@ -1,14 +1,14 @@
+from pyramid.response import Response
+from pyramid.view import view_config
 from sqlalchemy import func
 from sqlalchemy.exc import DBAPIError
 
 from datatables import ColumnDT, DataTables
-from pyramid.response import Response
-from pyramid.view import view_config
 
 from .models import Address, DBSession, User
 
 
-@view_config(route_name="home", renderer="templates/home.jinja2")
+@view_config(route_name="home", renderer="templates/home.html")
 def home(request):
     """Try to connect to database, and list available examples."""
     try:
@@ -23,7 +23,7 @@ def home(request):
     return {"project": "pyramid_tut"}
 
 
-@view_config(route_name="dt_110x", renderer="templates/dt_110x.jinja2")
+@view_config(route_name="dt_110x", renderer="templates/dt_110x.html")
 def dt_110x(request):
     """List users with DataTables >= 1.10.x."""
     return {"project": "dt_110x"}
@@ -31,7 +31,7 @@ def dt_110x(request):
 
 @view_config(
     route_name="dt_110x_custom_column",
-    renderer="templates/dt_110x_custom_column.jinja2")
+    renderer="templates/dt_110x_custom_column.html")
 def dt_110x_custom_column(request):
     """Show a CRUD custom column."""
     return {"project": "dt_110x_custom_column"}
@@ -39,7 +39,7 @@ def dt_110x_custom_column(request):
 
 @view_config(
     route_name="dt_110x_basic_column_search",
-    renderer="templates/dt_110x_basic_column_search.jinja2")
+    renderer="templates/dt_110x_basic_column_search.html")
 def dt_110x_basic_column_search(request):
     """Text based per column search."""
     return {"project": "dt_110x_basic_column_search"}
@@ -47,14 +47,14 @@ def dt_110x_basic_column_search(request):
 
 @view_config(
     route_name="dt_110x_advanced_column_search",
-    renderer="templates/dt_110x_advanced_column_search.jinja2")
+    renderer="templates/dt_110x_advanced_column_search.html")
 def dt_110x_advanced_column_search(request):
     """Advanced per column search."""
     return {"project": "dt_110x_advanced_column_search"}
 
 
 @view_config(
-    route_name="dt_110x_yadcf", renderer="templates/dt_110x_yadcf.jinja2")
+    route_name="dt_110x_yadcf", renderer="templates/dt_110x_yadcf.html")
 def dt_110x_yadcf(request):
     """Search with yadcf."""
     return {"project": "dt_110x_yadcf"}

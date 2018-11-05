@@ -1,7 +1,9 @@
 {% include 'base.html' %}
+
 {% block extra_stylesheets %}
   <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css" rel="stylesheet">
 {% endblock %}
+
 {% block content %}
   <div class="row">
     <div class="col-lg-12">
@@ -20,15 +22,16 @@
   </div>
 </div>
 {% endblock %}
+
 {% block extra_javascripts %}
-<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf-8">
-$(document).ready(function () {
-var table = $('#dt_110x').DataTable({
-"processing": true,
-"serverSide": true,
-"ajax": "{{ url_for('data') }}"
-});
-});
-</script>
+  <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+      var table = $('#dt_110x').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{{ url_for('data') }}"
+      });
+    });
+  </script>
 {% endblock %}

@@ -1,6 +1,6 @@
-=========
-flask_tut
-=========
+===========
+pyramid_tut
+===========
 
 Getting Started
 ---------------
@@ -13,8 +13,8 @@ In a virtualenv:
     $ cd sqlalchemy-datatables
     $ make install
     $ make install-examples
-    $ cd examples/flask_tut
-    $ export FLASK_APP=flask_tut
-    $ flask initdb
-    $ FLASK_DEBUG=1 flask run
-    $ go to http://localhost:5000
+    $ cd examples/pyramid_tut
+    $ python setup.py develop
+    $ pyramid_tut_initdb development.ini
+    $ pserve development.ini
+    $ go to http://localhost:6543
