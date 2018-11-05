@@ -198,7 +198,7 @@ class DataTables:
                     sort_expr = sort_expr.nullslast()
                 else:
                     raise ValueError(
-                        'Invalid order direction: %s'.format(direction))
+                        'Invalid order direction: {}'.format(direction))
 
             sort_expressions.append(sort_expr)
             i += 1
