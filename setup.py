@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__VERSION__ = '1.2.0'
+__VERSION__ = '2.0.0'
 
 FLASK_EXAMPLE = [
     'Flask',
