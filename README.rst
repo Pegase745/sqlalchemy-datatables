@@ -23,12 +23,6 @@ Installation
 
 **To install via pip:**
 
-*Python 2*
-
-.. code-block:: bash
-
-    $ pip install sqlalchemy-datatables
-
 *Python 3*
 
 .. code-block:: bash
@@ -41,7 +35,7 @@ Installation
 
     $ git clone git@github.com:Pegase745/sqlalchemy-datatables.git
     $ cd sqlalchemy-datatables
-    $ pip install .
+    $ pip3 install .
 
 **To contribute:**
 
