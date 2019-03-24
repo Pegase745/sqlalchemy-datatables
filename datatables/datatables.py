@@ -150,7 +150,7 @@ class DataTables:
     def _set_global_filter_expression(self):
         # global search filter
         global_search = self.params.get('search[value]', '')
-        if global_search is '':
+        if global_search == '':
             return
 
         if (self.allow_regex_searches

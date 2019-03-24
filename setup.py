@@ -41,8 +41,11 @@ setup(
             'flake8',
             'flake8-docstrings',
             'isort',
-            'pytest',
-            'pytest-cov',
+            # TODO: Remove the pinning of deps version once issue
+            #       https://github.com/z4r/python-coveralls/issues/66
+            #       is resolved.
+            'pytest<4',
+            'pytest-cov>= 2.4.0,< 2.6',
             'yapf',
         ],
         'examples': [FLASK_EXAMPLE + PYRAMID_EXAMPLE]
@@ -59,7 +62,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',

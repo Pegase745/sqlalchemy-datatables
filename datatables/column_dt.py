@@ -67,12 +67,14 @@ class ColumnDT(ColumnTuple):
     ):
         """Set default values due to namedtuple immutability."""
         if nulls_order and nulls_order not in NULLS_ORDER:
-            raise ValueError('{} is not an allowed value for nulls_order.'.
-                             format(nulls_order))
+            raise ValueError(
+                '{} is not an allowed value for nulls_order.'.format(
+                    nulls_order))
 
         if search_method not in SEARCH_METHODS:
-            raise ValueError('{} is not an allowed value for search_method.'.
-                             format(search_method))
+            raise ValueError(
+                '{} is not an allowed value for search_method.'.format(
+                    search_method))
 
         return super(ColumnDT, cls).__new__(
             cls,
