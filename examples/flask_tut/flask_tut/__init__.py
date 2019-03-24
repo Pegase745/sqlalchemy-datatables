@@ -1,18 +1,30 @@
-"""Flask tutorial views."""
-from flask import render_template, request, jsonify
-from flask import Flask
+from time import sleep
 
+import click
 from datatables import ColumnDT, DataTables
-
-from flask_tut.models import (
-    db,
-    User,
-    Address,
-)
+from flask import Flask, jsonify, render_template, request
+from flask_tut.models import Address, User, db
 
 app = Flask(__name__)
 app.config.from_pyfile('../app.cfg')
 db.init_app(app)
+
+
+@app.cli.command()
+def initdb():
+    """Initialize the database."""
+    click.echo('Init the db...')
+    db.create_all()
+
+    for i in range(30):
+        click.echo("Creating user/address combo #{}...".format(i))
+        address = Address(description='Address#2' + str(i).rjust(2, "0"))
+        db.session.add(address)
+        user = User(name='User#1' + str(i).rjust(2, "0"))
+        user.address = address
+        db.session.add(user)
+        sleep(1)
+    db.session.commit()
 
 
 @app.route("/")
@@ -39,8 +51,8 @@ def data():
     ]
 
     # defining the initial query depending on your purpose
-    query = db.session.query().select_from(
-        User).join(Address).filter(Address.id > 14)
+    query = db.session.query().select_from(User).join(Address).filter(
+        Address.id > 14)
 
     # GET parameters
     params = request.args.to_dict()
@@ -50,7 +62,3 @@ def data():
 
     # returns what is needed by DataTable
     return jsonify(rowTable.output_result())
-
-
-if __name__ == "__main__":
-    app.run('0.0.0.0', port=5678, debug=True)

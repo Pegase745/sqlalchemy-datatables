@@ -1,16 +1,11 @@
-"""Flask tutorial models.
-
-Basic example: a User has one or many Addresses.
-"""
 import datetime
-from flask_sqlalchemy import SQLAlchemy
 
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
 
 class User(db.Model):
-
     """Define a User."""
 
     __tablename__ = 'users'
@@ -23,15 +18,14 @@ class User(db.Model):
 
     def __unicode__(self):
         """Give a readable representation of an instance."""
-        return '%s' % self.name
+        return '{}'.format(self.name)
 
     def __repr__(self):
         """Give a unambiguous representation of an instance."""
-        return '<%s#%s>' % (self.__class__.__name__, self.id)
+        return '<{}#{}>'.format(self.__class__.__name__, self.id)
 
 
 class Address(db.Model):
-
     """Define an Address."""
 
     __tablename__ = 'addresses'
@@ -42,8 +36,8 @@ class Address(db.Model):
 
     def __unicode__(self):
         """Give a readable representation of an instance."""
-        return '%s' % (self.id)
+        return '{}'.format(self.id)
 
     def __repr__(self):
         """Give a unambiguous representation of an instance."""
-        return '<%s#%s>' % (self.__class__.__name__, self.id)
+        return '<{}#{}>'.format(self.__class__.__name__, self.id)

@@ -6,6 +6,24 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 
 Unreleased_
 -----------
+Removed
+~~~~~~~
+  - `BREAKING` - Drop python 2 support.
+
+Changed
+~~~~~~~
+  - Convert tests to pytest.
+  - Reorganize code.
+  - Modernize Flask example.
+  - Modernize pyramid example.
+  - Change and apply different linting style.
+  - Rename .jinja2 templates to .html.
+  - Update to python 3.6.
+  - Automatic deploy to Pypi from Travis.
+
+Fixed
+~~~~
+  - Fix DT crash when no `draw` parameter (#98).
 
 1.2.0_ - 2016-12-06
 -------------------

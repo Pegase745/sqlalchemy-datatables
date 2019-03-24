@@ -17,16 +17,16 @@
             <th>Created at</th>
           </tr>
         </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+      <tbody></tbody>
+    </table>
   </div>
+</div>
 {% endblock %}
 
 {% block extra_javascripts %}
   <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
+    $(document).ready(function () {
       var table = $('#dt_110x').DataTable({
         "processing": true,
         "serverSide": true,
