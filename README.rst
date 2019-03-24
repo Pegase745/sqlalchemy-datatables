@@ -2,13 +2,16 @@
 sqlalchemy-datatables
 ======================
 
-|Build Status| |PyPi Version| |Coverage|
+|Build Status| |PyPi Version| |Scrutinizer| |Coverage|
 
 .. |Build Status| image:: https://travis-ci.org/Pegase745/sqlalchemy-datatables.svg?branch=master
     :target: https://travis-ci.org/Pegase745/sqlalchemy-datatables
 
 .. |PyPi Version| image:: https://badge.fury.io/py/sqlalchemy-datatables.svg
     :target: https://pypi.python.org/pypi/sqlalchemy-datatables/
+
+.. |Scrutinizer| image:: https://scrutinizer-ci.com/g/Pegase745/sqlalchemy-datatables/badges/quality-score.png
+    :target: https://scrutinizer-ci.com/g/Pegase745/sqlalchemy-datatables/
 
 .. |Coverage| image:: https://codecov.io/gh/Pegase745/sqlalchemy-datatables/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/Pegase745/sqlalchemy-datatables
