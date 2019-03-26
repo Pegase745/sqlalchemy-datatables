@@ -7,6 +7,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_ and `Keep A 
 Unreleased_
 -----------
 
+2.0.1_ - 2019-02-26
+-------------------
+Fixed
+~~~~~~~
+  - Fix sdist with missing package (#116).
+
 2.0.0_ - 2019-02-24
 -------------------
 Removed
