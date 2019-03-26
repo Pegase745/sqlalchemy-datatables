@@ -29,6 +29,7 @@ setup(
     author='Michel Nemnom',
     author_email='michel.nemnom+pypi@gmail.com',
     url='https://github.com/pegase745/sqlalchemy-datatables',
+    packages=['datatables'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
