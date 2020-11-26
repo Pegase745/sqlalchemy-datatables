@@ -4,16 +4,19 @@ from collections import namedtuple
 
 from datatables.search_methods import SEARCH_METHODS
 
-NULLS_ORDER = ['nullsfirst', 'nullslast']
+NULLS_ORDER = ["nullsfirst", "nullslast"]
 
-ColumnTuple = namedtuple('ColumnDT', [
-    'sqla_expr',
-    'column_name',
-    'mData',
-    'search_method',
-    'nulls_order',
-    'global_search',
-])
+ColumnTuple = namedtuple(
+    "ColumnDT",
+    [
+        "sqla_expr",
+        "column_name",
+        "mData",
+        "search_method",
+        "nulls_order",
+        "global_search",
+    ],
+)
 
 
 class ColumnDT(ColumnTuple):
@@ -57,24 +60,24 @@ class ColumnDT(ColumnTuple):
     """
 
     def __new__(
-            cls,
-            sqla_expr,
-            column_name=None,
-            mData=None,
-            search_method='string_contains',
-            nulls_order=None,
-            global_search=True,
+        cls,
+        sqla_expr,
+        column_name=None,
+        mData=None,
+        search_method="string_contains",
+        nulls_order=None,
+        global_search=True,
     ):
         """Set default values due to namedtuple immutability."""
         if nulls_order and nulls_order not in NULLS_ORDER:
             raise ValueError(
-                '{} is not an allowed value for nulls_order.'.format(
-                    nulls_order))
+                "{} is not an allowed value for nulls_order.".format(nulls_order)
+            )
 
         if search_method not in SEARCH_METHODS:
             raise ValueError(
-                '{} is not an allowed value for search_method.'.format(
-                    search_method))
+                "{} is not an allowed value for search_method.".format(search_method)
+            )
 
         return super(ColumnDT, cls).__new__(
             cls,

@@ -16,10 +16,10 @@ def test_list(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 10
-    assert len(res['data'][0]) == 1
-    assert res['recordsTotal'] == '50'
-    assert res['recordsFiltered'] == '50'
+    assert len(res["data"]) == 10
+    assert len(res["data"][0]) == 1
+    assert res["recordsTotal"] == "50"
+    assert res["recordsFiltered"] == "50"
 
 
 def test_list_bad_length(session):
@@ -32,7 +32,7 @@ def test_list_bad_length(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert 'Length should be' in res['error']
+    assert "Length should be" in res["error"]
 
 
 def test_list_detail(session):
@@ -41,7 +41,7 @@ def test_list_detail(session):
         ColumnDT(User.id),
         ColumnDT(User.name),
         ColumnDT(Address.description),
-        ColumnDT(User.created_at)
+        ColumnDT(User.created_at),
     ]
 
     query = session.query()
@@ -50,7 +50,7 @@ def test_list_detail(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data'][0]) == 4
+    assert len(res["data"][0]) == 4
 
 
 def test_list_fixed_length(session):
@@ -63,7 +63,7 @@ def test_list_fixed_length(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 7
+    assert len(res["data"]) == 7
 
 
 def test_list_inner_join(session):
@@ -76,9 +76,9 @@ def test_list_inner_join(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 3
-    assert res['recordsTotal'] == '3'
-    assert res['recordsFiltered'] == '3'
+    assert len(res["data"]) == 3
+    assert res["recordsTotal"] == "3"
+    assert res["recordsFiltered"] == "3"
 
 
 def test_list_total_length(session):
@@ -91,12 +91,12 @@ def test_list_total_length(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 50
+    assert len(res["data"]) == 50
 
 
 @pytest.fixture(scope="function")
 def fixtures_list_hybrid_attributes(session):
-    user51 = User(name='User 51')
+    user51 = User(name="User 51")
 
     session.add(user51)
     session.commit()
@@ -114,7 +114,7 @@ def test_list_hybrid_attributes(session):
         ColumnDT(User.id),
         ColumnDT(User.dummy),
         ColumnDT(User.name),
-        ColumnDT(User.created_at)
+        ColumnDT(User.created_at),
     ]
 
     session.query(*[User.id, User.dummy]).all()
@@ -125,15 +125,15 @@ def test_list_hybrid_attributes(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 1
-    assert res['data'][0]['1'] == 'Us'
-    assert res['data'][0]['2'] == 'User 51'
+    assert len(res["data"]) == 1
+    assert res["data"][0]["1"] == "Us"
+    assert res["data"][0]["2"] == "User 51"
 
 
 @pytest.fixture(scope="function")
 def fixtures_list_specific_page(session):
-    user51 = User(name='User 51')
-    user52 = User(name='User 52')
+    user51 = User(name="User 51")
+    user52 = User(name="User 52")
 
     session.add(user51)
     session.add(user52)
@@ -157,8 +157,8 @@ def test_list_specific_page(session):
     rowTable = DataTables(params, query, columns)
     res = rowTable.output_result()
 
-    assert len(res['data']) == 2
-    assert res['recordsTotal'] == '52'
-    assert res['recordsFiltered'] == '52'
-    assert res['data'][0]['0'] == 51
-    assert res['data'][1]['0'] == 52
+    assert len(res["data"]) == 2
+    assert res["recordsTotal"] == "52"
+    assert res["recordsFiltered"] == "52"
+    assert res["data"][0]["0"] == 51
+    assert res["data"][1]["0"] == 52

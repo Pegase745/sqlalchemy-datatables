@@ -43,7 +43,8 @@ def main(argv=sys.argv):
 
             user = User(
                 name="User#1" + str(i).rjust(2, "0"),
-                birthday=date(1980 + i % 8, i % 12 + 1, i % 10 + 1))
+                birthday=date(1980 + i % 8, i % 12 + 1, i % 10 + 1),
+            )
 
             user.address = address
 

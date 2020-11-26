@@ -1,7 +1,12 @@
 from sqlalchemy import Column, Date, ForeignKey, Integer, Unicode, func
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (backref, column_property, relationship,
-                            scoped_session, sessionmaker)
+from sqlalchemy.orm import (
+    backref,
+    column_property,
+    relationship,
+    scoped_session,
+    sessionmaker,
+)
 from zope.sqlalchemy import ZopeTransactionExtension
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -23,8 +28,9 @@ class User(Base):
     address = relationship("Address", uselist=False, backref=backref("user"))
 
     age = column_property(
-        func.strftime("%Y.%m%d", "now") -
-        func.strftime("%Y.%m%d", birthday).cast(Integer))
+        func.strftime("%Y.%m%d", "now")
+        - func.strftime("%Y.%m%d", birthday).cast(Integer)
+    )
 
     def __unicode__(self):
         """Give a readable representation of an instance."""

@@ -14,11 +14,7 @@ def home(request):
     try:
         DBSession.query(User).first()
     except DBAPIError:
-        return Response(
-            conn_err_msg,
-            content_type="text/plain",
-            status_int=500,
-        )
+        return Response(conn_err_msg, content_type="text/plain", status_int=500,)
 
     return {"project": "pyramid_tut"}
 
@@ -30,8 +26,8 @@ def dt_110x(request):
 
 
 @view_config(
-    route_name="dt_110x_custom_column",
-    renderer="templates/dt_110x_custom_column.html")
+    route_name="dt_110x_custom_column", renderer="templates/dt_110x_custom_column.html"
+)
 def dt_110x_custom_column(request):
     """Show a CRUD custom column."""
     return {"project": "dt_110x_custom_column"}
@@ -39,7 +35,8 @@ def dt_110x_custom_column(request):
 
 @view_config(
     route_name="dt_110x_basic_column_search",
-    renderer="templates/dt_110x_basic_column_search.html")
+    renderer="templates/dt_110x_basic_column_search.html",
+)
 def dt_110x_basic_column_search(request):
     """Text based per column search."""
     return {"project": "dt_110x_basic_column_search"}
@@ -47,14 +44,14 @@ def dt_110x_basic_column_search(request):
 
 @view_config(
     route_name="dt_110x_advanced_column_search",
-    renderer="templates/dt_110x_advanced_column_search.html")
+    renderer="templates/dt_110x_advanced_column_search.html",
+)
 def dt_110x_advanced_column_search(request):
     """Advanced per column search."""
     return {"project": "dt_110x_advanced_column_search"}
 
 
-@view_config(
-    route_name="dt_110x_yadcf", renderer="templates/dt_110x_yadcf.html")
+@view_config(route_name="dt_110x_yadcf", renderer="templates/dt_110x_yadcf.html")
 def dt_110x_yadcf(request):
     """Search with yadcf."""
     return {"project": "dt_110x_yadcf"}
@@ -68,11 +65,10 @@ def data(request):
         ColumnDT(User.name),
         ColumnDT(Address.description),
         ColumnDT(func.strftime("%d-%m-%Y", User.birthday)),
-        ColumnDT(User.age)
+        ColumnDT(User.age),
     ]
 
-    query = DBSession.query().select_from(User).join(Address).filter(
-        Address.id > 4)
+    query = DBSession.query().select_from(User).join(Address).filter(Address.id > 4)
 
     rowTable = DataTables(request.GET, query, columns)
 
@@ -87,11 +83,10 @@ def data_advanced(request):
         ColumnDT(User.name),
         ColumnDT(Address.description),
         ColumnDT(User.birthday, search_method="date"),
-        ColumnDT(User.age, search_method="numeric")
+        ColumnDT(User.age, search_method="numeric"),
     ]
 
-    query = DBSession.query().select_from(User).join(Address).filter(
-        Address.id > 4)
+    query = DBSession.query().select_from(User).join(Address).filter(Address.id > 4)
 
     rowTable = DataTables(request.GET, query, columns)
 
@@ -106,18 +101,17 @@ def data_yadcf(request):
         ColumnDT(User.name, search_method="yadcf_multi_select"),
         ColumnDT(Address.description, search_method="yadcf_autocomplete"),
         ColumnDT(User.birthday, search_method="yadcf_range_date"),
-        ColumnDT(User.age, search_method="yadcf_range_number_slider")
+        ColumnDT(User.age, search_method="yadcf_range_number_slider"),
     ]
 
-    query = DBSession.query().select_from(User).join(Address).filter(
-        Address.id > 4)
+    query = DBSession.query().select_from(User).join(Address).filter(Address.id > 4)
 
     rowTable = DataTables(request.GET, query, columns)
 
     return rowTable.output_result()
 
 
-conn_err_msg = '''\
+conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
@@ -131,4 +125,4 @@ might be caused by one of the following things:
 
 After you fix the problem, please restart the Pyramid application to
 try it again.
-'''
+"""

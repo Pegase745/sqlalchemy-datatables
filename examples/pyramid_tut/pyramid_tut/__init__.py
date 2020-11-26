@@ -37,11 +37,11 @@ def main(global_config, **settings):
 
     config.add_route("dt_110x_custom_column", "/dt_110x_custom_column")
 
-    config.add_route("dt_110x_basic_column_search",
-                     "/dt_110x_basic_column_search")
+    config.add_route("dt_110x_basic_column_search", "/dt_110x_basic_column_search")
 
-    config.add_route("dt_110x_advanced_column_search",
-                     "/dt_110x_advanced_column_search")
+    config.add_route(
+        "dt_110x_advanced_column_search", "/dt_110x_advanced_column_search"
+    )
 
     config.add_route("dt_110x_yadcf", "/dt_110x_yadcf")
 
@@ -53,6 +53,6 @@ def main(global_config, **settings):
 
     config.add_renderer("json_with_dates", json_renderer)
 
-    config.add_jinja2_renderer('.html')
+    config.add_jinja2_renderer(".html")
 
     return config.make_wsgi_app()

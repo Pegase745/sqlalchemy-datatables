@@ -13,9 +13,10 @@ setup(
     description="flask_tut",
     long_description=README,
     classifiers=[
-        "Programming Language :: Python", "Framework :: Pyramid",
+        "Programming Language :: Python",
+        "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application"
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     ],
     author="",
     author_email="",
